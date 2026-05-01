@@ -609,6 +609,41 @@ textarea.inp { resize: vertical; min-height: 65px; }
   </div>
 </div>
 
+<!-- MODAL MODIFICA MAGAZZINO -->
+<div class="modal-bg" id="modal-em">
+  <div class="modal" style="width:500px">
+    <div class="modal-hd">
+      <div class="modal-t">Modifica Articolo</div>
+      <button class="modal-x" onclick="chiudiM('modal-em')">x</button>
+    </div>
+    <div class="modal-b">
+      <input type="hidden" id="em-idx">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label class="fl">Codice</label><input class="inp" id="em-cod"></div>
+        <div class="fg"><label class="fl">Categoria</label>
+          <select class="inp" id="em-cat">
+            <option>Schermo</option><option>Batteria</option><option>Connettore</option>
+            <option>Fotocamera</option><option>Scocca</option><option>Scheda madre</option><option>Altro</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg" style="margin-top:10px"><label class="fl">Descrizione *</label><input class="inp" id="em-desc"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+        <div class="fg"><label class="fl">Quantita</label><input class="inp" id="em-qty" type="number" min="0"></div>
+        <div class="fg"><label class="fl">Scorta minima</label><input class="inp" id="em-min" type="number" min="0"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+        <div class="fg"><label class="fl">P.Acquisto EUR</label><input class="inp" id="em-pac" type="number" step="0.01" min="0"></div>
+        <div class="fg"><label class="fl">P.Vendita EUR</label><input class="inp" id="em-pven" type="number" step="0.01" min="0"></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-g" onclick="chiudiM('modal-em')">Annulla</button>
+      <button class="btn btn-p" onclick="salvaModMag()">Salva Modifiche</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL PREVENTIVO WHATSAPP -->
 <div class="modal-bg" id="modal-wa">
   <div class="modal" style="width:560px">
@@ -1525,6 +1560,7 @@ function renderMag() {
       + '<td style="white-space:nowrap">'
         + '<button class="btn btn-g btn-sm" style="border-color:#40d080;color:#40d080;margin-right:3px" data-mi="' + i + '" onclick="adjQta(+this.dataset.mi,1)">+</button>'
         + '<button class="btn btn-g btn-sm" style="margin-right:3px" data-mi="' + i + '" onclick="adjQta(+this.dataset.mi,-1)">-</button>'
+        + '<button class="btn btn-g btn-sm" style="border-color:#ff8800;color:#ff8800;margin-right:3px" data-mi="' + i + '" onclick="apriModMag(+this.dataset.mi)">Modif.</button>'
         + '<button class="btn btn-d btn-sm" data-mi="' + i + '" onclick="elimMag(+this.dataset.mi)">X</button>'
       + '</td></tr>';
   }
@@ -1533,6 +1569,36 @@ function renderMag() {
 
 function adjQta(i, d) { ML[i].qty = Math.max(0, ML[i].qty + d); salva(); renderMag(); }
 function elimMag(i) { if (!confirm('Eliminare?')) return; ML.splice(i, 1); salva(); renderMag(); }
+
+function apriModMag(i) {
+  var m = ML[i];
+  document.getElementById('em-idx').value = i;
+  document.getElementById('em-cod').value = m.cod || '';
+  document.getElementById('em-cat').value = m.cat || 'Schermo';
+  document.getElementById('em-desc').value = m.desc || '';
+  document.getElementById('em-qty').value = m.qty || 0;
+  document.getElementById('em-min').value = m.min || 0;
+  document.getElementById('em-pac').value = m.pac || 0;
+  document.getElementById('em-pven').value = m.pven || 0;
+  apriM('modal-em');
+}
+
+function salvaModMag() {
+  var i = parseInt(document.getElementById('em-idx').value);
+  var desc = document.getElementById('em-desc').value.trim();
+  if (!desc) { alert('Inserisci la descrizione'); return; }
+  ML[i].cod  = document.getElementById('em-cod').value.trim();
+  ML[i].cat  = document.getElementById('em-cat').value;
+  ML[i].desc = desc;
+  ML[i].qty  = parseInt(document.getElementById('em-qty').value) || 0;
+  ML[i].min  = parseInt(document.getElementById('em-min').value) || 0;
+  ML[i].pac  = parseFloat(document.getElementById('em-pac').value) || 0;
+  ML[i].pven = parseFloat(document.getElementById('em-pven').value) || 0;
+  salva();
+  chiudiM('modal-em');
+  renderMag();
+  toast('Aggiornato', ML[i].desc);
+}
 
 // ============================================================
 // FATTURE
