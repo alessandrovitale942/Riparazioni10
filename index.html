@@ -217,6 +217,24 @@ textarea.inp { resize: vertical; min-height: 65px; }
     <button class="btn btn-p" onclick="mostraModaleM()">+ Aggiungi Pezzo</button>
   </div>
   <div id="mag-alert"></div>
+  <div class="card" style="margin-bottom:12px">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <input class="inp" id="mag-search" placeholder="&#128269; Cerca per descrizione, codice o categoria..." style="flex:1;min-width:220px" oninput="renderMag()">
+      <select class="inp" id="mag-filter-cat" style="width:160px" onchange="renderMag()">
+        <option value="">Tutte le categorie</option>
+        <option>Schermo</option><option>Batteria</option><option>Connettore</option>
+        <option>Fotocamera</option><option>Scocca</option><option>Scheda madre</option><option>Altro</option>
+      </select>
+      <select class="inp" id="mag-filter-disp" style="width:150px" onchange="renderMag()">
+        <option value="">Tutti</option>
+        <option value="disp">Disponibili</option>
+        <option value="esau">Esauriti</option>
+        <option value="bassa">Scorta bassa</option>
+      </select>
+      <button class="btn btn-g btn-sm" style="border-color:#4080ff;color:#4080ff;white-space:nowrap" onclick="apriListino()">&#128176; Listino Ufficiale</button>
+    </div>
+    <div id="mag-search-info" style="font-size:11px;color:#555;margin-top:8px;font-family:'DM Mono',monospace"></div>
+  </div>
   <div class="card">
     <table><thead><tr><th>Codice</th><th>Descrizione</th><th>Cat.</th><th>Qta</th><th>P.Acq EUR</th><th>P.Vend EUR</th><th>Azioni</th></tr></thead><tbody id="mag-tb"></tbody></table>
   </div>
@@ -605,6 +623,40 @@ textarea.inp { resize: vertical; min-height: 65px; }
     <div class="modal-ft">
       <button class="btn btn-g" onclick="chiudiM('modal-pf')">Chiudi</button>
       <button class="btn btn-p" onclick="stampaFat()">Stampa</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LISTINO UFFICIALE -->
+<div class="modal-bg" id="modal-listino">
+  <div class="modal" style="width:680px;max-height:90vh">
+    <div class="modal-hd">
+      <div class="modal-t">&#128176; Listino Prezzi Ufficiali</div>
+      <button class="modal-x" onclick="chiudiM('modal-listino')">x</button>
+    </div>
+    <div class="modal-b" style="padding:0">
+      <div style="padding:12px 16px;border-bottom:1px solid #1a1a1a;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select class="inp" id="lst-brand" style="width:140px" onchange="renderListino()">
+          <option value="apple">Apple</option>
+          <option value="samsung">Samsung</option>
+          <option value="xiaomi">Xiaomi</option>
+          <option value="huawei">Huawei</option>
+        </select>
+        <select class="inp" id="lst-cat" style="width:140px" onchange="renderListino()">
+          <option value="">Tutte le categorie</option>
+          <option>Schermo</option>
+          <option>Batteria</option>
+          <option>Connettore</option>
+          <option>Fotocamera</option>
+          <option>Scocca</option>
+        </select>
+        <input class="inp" id="lst-search" placeholder="Cerca modello..." style="flex:1;min-width:140px" oninput="renderListino()">
+        <div style="font-size:10px;color:#555;width:100%">&#9432; Prezzi indicativi di riferimento (IVA inclusa). Fonte: listini ufficiali e tariffari service autorizzati 2024-2025.</div>
+      </div>
+      <div id="lst-tb" style="overflow-y:auto;max-height:420px"></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-g" onclick="chiudiM('modal-listino')">Chiudi</button>
     </div>
   </div>
 </div>
@@ -1547,16 +1599,54 @@ function renderMag() {
     ? '<div class="alert alert-w"><b>' + sc.length + ' articolo/i</b> sotto scorta minima</div>' : '';
   var tb = document.getElementById('mag-tb');
   if (!ML.length) { tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:36px;color:#555">Magazzino vuoto</td></tr>'; return; }
-  var html = '';
+
+  var q = document.getElementById('mag-search') ? document.getElementById('mag-search').value.toLowerCase().trim() : '';
+  var cat = document.getElementById('mag-filter-cat') ? document.getElementById('mag-filter-cat').value : '';
+  var disp = document.getElementById('mag-filter-disp') ? document.getElementById('mag-filter-disp').value : '';
+
+  var filtered = [];
   for (var i = 0; i < ML.length; i++) {
     var m = ML[i];
-    html += '<tr>'
-      + '<td><code style="color:#ff8800">' + m.cod + '</code></td>'
+    if (q && (m.desc.toLowerCase().indexOf(q) === -1 && (m.cod||'').toLowerCase().indexOf(q) === -1 && (m.cat||'').toLowerCase().indexOf(q) === -1)) continue;
+    if (cat && m.cat !== cat) continue;
+    if (disp === 'disp' && m.qty <= 0) continue;
+    if (disp === 'esau' && m.qty > 0) continue;
+    if (disp === 'bassa' && m.qty > m.min) continue;
+    filtered.push({ m: m, i: i });
+  }
+
+  var infoEl = document.getElementById('mag-search-info');
+  if (infoEl) {
+    if (q || cat || disp) {
+      infoEl.innerHTML = '&#128269; ' + filtered.length + ' risultat' + (filtered.length===1?'o':'i') + ' su ' + ML.length + ' articoli';
+    } else {
+      var dispCount = ML.filter(function(x){return x.qty>x.min;}).length;
+      infoEl.innerHTML = ML.length + ' articoli totali &nbsp;&bull;&nbsp; <b style="color:#40d080">' + dispCount + ' disponibili</b> &nbsp;&bull;&nbsp; <b style="color:#ff2200">' + sc.length + ' sotto scorta</b>';
+    }
+  }
+
+  if (!filtered.length) {
+    tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:36px;color:#555">Nessun risultato' + (q ? ' per &quot;' + q + '&quot;' : '') + '</td></tr>';
+    return;
+  }
+
+  var html = '';
+  for (var j = 0; j < filtered.length; j++) {
+    var m = filtered[j].m;
+    var i = filtered[j].i;
+    var esaurito = m.qty === 0;
+    var bassa = m.qty > 0 && m.qty <= m.min;
+    var qColor = esaurito ? '#ff2200' : bassa ? '#ff8800' : '#40d080';
+    var qBadge = esaurito ? m.qty + ' <span style="font-size:10px;background:#330000;color:#ff4444;padding:1px 5px;border-radius:8px">ESAURITO</span>'
+               : bassa    ? m.qty + ' <span style="font-size:10px;background:#332200;color:#ff8800;padding:1px 5px;border-radius:8px">BASSA</span>'
+               : m.qty;
+    html += '<tr style="' + (esaurito ? 'opacity:0.55' : '') + '">'
+      + '<td><code style="color:#ff8800">' + (m.cod||'-') + '</code></td>'
       + '<td><b>' + m.desc + '</b></td>'
-      + '<td>' + m.cat + '</td>'
-      + '<td><b style="color:' + (m.qty <= m.min ? '#ff2200' : '#40d080') + '">' + m.qty + '</b>' + (m.qty <= m.min ? ' !' : '') + '</td>'
-      + '<td>EUR ' + m.pac.toFixed(2) + '</td>'
-      + '<td>EUR ' + m.pven.toFixed(2) + '</td>'
+      + '<td><span style="font-size:11px;background:#1a1a1a;padding:2px 7px;border-radius:10px">' + m.cat + '</span></td>'
+      + '<td><b style="color:' + qColor + '">' + qBadge + '</b></td>'
+      + '<td>EUR ' + (m.pac||0).toFixed(2) + '</td>'
+      + '<td><b>EUR ' + (m.pven||0).toFixed(2) + '</b></td>'
       + '<td style="white-space:nowrap">'
         + '<button class="btn btn-g btn-sm" style="border-color:#40d080;color:#40d080;margin-right:3px" data-mi="' + i + '" onclick="adjQta(+this.dataset.mi,1)">+</button>'
         + '<button class="btn btn-g btn-sm" style="margin-right:3px" data-mi="' + i + '" onclick="adjQta(+this.dataset.mi,-1)">-</button>'
@@ -1971,6 +2061,7 @@ function rispondiTicket(key, risposta) {
 }
 
 checkTicketMode();
+
 aggiornaSidebar();
 
 function caricaSett() {
@@ -2142,6 +2233,201 @@ function parseCSVLine(line) {
 // ============================================================
 // AVVIO
 // ============================================================
+
+// ============================================================
+// LISTINO PREZZI UFFICIALI
+// ============================================================
+var LISTINO = {
+  apple: [
+    // iPhone 16 series
+    { mod:'iPhone 16 Pro Max', cat:'Schermo', desc:'Display OLED originale', pac:289, pven:449 },
+    { mod:'iPhone 16 Pro',     cat:'Schermo', desc:'Display OLED originale', pac:259, pven:399 },
+    { mod:'iPhone 16 Plus',    cat:'Schermo', desc:'Display OLED originale', pac:219, pven:349 },
+    { mod:'iPhone 16',         cat:'Schermo', desc:'Display OLED originale', pac:189, pven:299 },
+    // iPhone 15 series
+    { mod:'iPhone 15 Pro Max', cat:'Schermo', desc:'Display OLED originale', pac:259, pven:389 },
+    { mod:'iPhone 15 Pro',     cat:'Schermo', desc:'Display OLED originale', pac:229, pven:359 },
+    { mod:'iPhone 15 Plus',    cat:'Schermo', desc:'Display OLED originale', pac:189, pven:299 },
+    { mod:'iPhone 15',         cat:'Schermo', desc:'Display OLED originale', pac:169, pven:269 },
+    // iPhone 14 series
+    { mod:'iPhone 14 Pro Max', cat:'Schermo', desc:'Display OLED originale', pac:219, pven:339 },
+    { mod:'iPhone 14 Pro',     cat:'Schermo', desc:'Display OLED originale', pac:199, pven:319 },
+    { mod:'iPhone 14 Plus',    cat:'Schermo', desc:'Display OLED originale', pac:169, pven:269 },
+    { mod:'iPhone 14',         cat:'Schermo', desc:'Display OLED originale', pac:149, pven:239 },
+    // iPhone 13 series
+    { mod:'iPhone 13 Pro Max', cat:'Schermo', desc:'Display OLED originale', pac:189, pven:299 },
+    { mod:'iPhone 13 Pro',     cat:'Schermo', desc:'Display OLED originale', pac:169, pven:269 },
+    { mod:'iPhone 13',         cat:'Schermo', desc:'Display OLED originale', pac:139, pven:219 },
+    { mod:'iPhone 13 Mini',    cat:'Schermo', desc:'Display OLED originale', pac:119, pven:189 },
+    // iPhone 12 series
+    { mod:'iPhone 12 Pro Max', cat:'Schermo', desc:'Display OLED originale', pac:159, pven:249 },
+    { mod:'iPhone 12 Pro',     cat:'Schermo', desc:'Display OLED originale', pac:149, pven:229 },
+    { mod:'iPhone 12',         cat:'Schermo', desc:'Display OLED originale', pac:129, pven:199 },
+    { mod:'iPhone 12 Mini',    cat:'Schermo', desc:'Display OLED originale', pac:109, pven:169 },
+    // iPhone 11 series
+    { mod:'iPhone 11 Pro Max', cat:'Schermo', desc:'Display OLED originale', pac:139, pven:219 },
+    { mod:'iPhone 11 Pro',     cat:'Schermo', desc:'Display OLED originale', pac:129, pven:199 },
+    { mod:'iPhone 11',         cat:'Schermo', desc:'Display LCD originale',  pac:89,  pven:139 },
+    // Batterie Apple
+    { mod:'iPhone 16 Pro Max', cat:'Batteria', desc:'Batteria originale Apple', pac:69, pven:109 },
+    { mod:'iPhone 16 Pro',     cat:'Batteria', desc:'Batteria originale Apple', pac:65, pven:99  },
+    { mod:'iPhone 16',         cat:'Batteria', desc:'Batteria originale Apple', pac:59, pven:89  },
+    { mod:'iPhone 15 Pro Max', cat:'Batteria', desc:'Batteria originale Apple', pac:65, pven:99  },
+    { mod:'iPhone 15 Pro',     cat:'Batteria', desc:'Batteria originale Apple', pac:59, pven:89  },
+    { mod:'iPhone 15',         cat:'Batteria', desc:'Batteria originale Apple', pac:55, pven:85  },
+    { mod:'iPhone 14 Pro Max', cat:'Batteria', desc:'Batteria originale Apple', pac:59, pven:89  },
+    { mod:'iPhone 14 Pro',     cat:'Batteria', desc:'Batteria originale Apple', pac:55, pven:85  },
+    { mod:'iPhone 14',         cat:'Batteria', desc:'Batteria originale Apple', pac:49, pven:79  },
+    { mod:'iPhone 13 Pro Max', cat:'Batteria', desc:'Batteria originale Apple', pac:55, pven:85  },
+    { mod:'iPhone 13',         cat:'Batteria', desc:'Batteria originale Apple', pac:49, pven:75  },
+    { mod:'iPhone 12',         cat:'Batteria', desc:'Batteria originale Apple', pac:45, pven:69  },
+    { mod:'iPhone 11',         cat:'Batteria', desc:'Batteria originale Apple', pac:39, pven:59  },
+    { mod:'iPhone SE 3a gen',cat:'Batteria', desc:'Batteria originale Apple', pac:39, pven:59  },
+    // Connettori Apple
+    { mod:'iPhone 15-16 USB-C', cat:'Connettore', desc:'Connettore ricarica USB-C', pac:39, pven:69 },
+    { mod:'iPhone 14 e prec Lightning', cat:'Connettore', desc:'Connettore Lightning', pac:29, pven:49 },
+    // iPad
+    { mod:'iPad Pro 12.9 (2024)', cat:'Schermo', desc:'Display OLED originale', pac:389, pven:599 },
+    { mod:'iPad Pro 11 (2024)',   cat:'Schermo', desc:'Display OLED originale', pac:299, pven:469 },
+    { mod:'iPad Air 13 (2024)',   cat:'Schermo', desc:'Display LCD originale',  pac:189, pven:299 },
+    { mod:'iPad Air 11 (2024)',   cat:'Schermo', desc:'Display LCD originale',  pac:159, pven:249 },
+    { mod:'iPad 10 gen',          cat:'Schermo', desc:'Display LCD originale',  pac:129, pven:199 },
+    { mod:'iPad Mini 6',          cat:'Schermo', desc:'Display LCD originale',  pac:149, pven:229 },
+  ],
+  samsung: [
+    // Galaxy S24 series
+    { mod:'Galaxy S24 Ultra', cat:'Schermo', desc:'Display Dynamic AMOLED', pac:269, pven:419 },
+    { mod:'Galaxy S24+',      cat:'Schermo', desc:'Display Dynamic AMOLED', pac:229, pven:359 },
+    { mod:'Galaxy S24',       cat:'Schermo', desc:'Display Dynamic AMOLED', pac:189, pven:299 },
+    // Galaxy S23 series
+    { mod:'Galaxy S23 Ultra', cat:'Schermo', desc:'Display Dynamic AMOLED', pac:239, pven:369 },
+    { mod:'Galaxy S23+',      cat:'Schermo', desc:'Display Dynamic AMOLED', pac:199, pven:319 },
+    { mod:'Galaxy S23',       cat:'Schermo', desc:'Display Dynamic AMOLED', pac:169, pven:269 },
+    // Galaxy S22 series
+    { mod:'Galaxy S22 Ultra', cat:'Schermo', desc:'Display Dynamic AMOLED', pac:209, pven:329 },
+    { mod:'Galaxy S22+',      cat:'Schermo', desc:'Display Dynamic AMOLED', pac:179, pven:279 },
+    { mod:'Galaxy S22',       cat:'Schermo', desc:'Display Dynamic AMOLED', pac:149, pven:239 },
+    // Galaxy A series
+    { mod:'Galaxy A55',  cat:'Schermo', desc:'Display Super AMOLED', pac:109, pven:169 },
+    { mod:'Galaxy A54',  cat:'Schermo', desc:'Display Super AMOLED', pac:99,  pven:155 },
+    { mod:'Galaxy A35',  cat:'Schermo', desc:'Display Super AMOLED', pac:89,  pven:139 },
+    { mod:'Galaxy A34',  cat:'Schermo', desc:'Display Super AMOLED', pac:79,  pven:124 },
+    { mod:'Galaxy A25',  cat:'Schermo', desc:'Display Super AMOLED', pac:69,  pven:109 },
+    { mod:'Galaxy A15',  cat:'Schermo', desc:'Display LCD',          pac:49,  pven:79  },
+    // Batterie Samsung
+    { mod:'Galaxy S24 Ultra', cat:'Batteria', desc:'Batteria originale Samsung', pac:59, pven:89 },
+    { mod:'Galaxy S24',       cat:'Batteria', desc:'Batteria originale Samsung', pac:49, pven:75 },
+    { mod:'Galaxy S23 Ultra', cat:'Batteria', desc:'Batteria originale Samsung', pac:55, pven:85 },
+    { mod:'Galaxy S23',       cat:'Batteria', desc:'Batteria originale Samsung', pac:45, pven:69 },
+    { mod:'Galaxy A55',       cat:'Batteria', desc:'Batteria originale Samsung', pac:35, pven:55 },
+    { mod:'Galaxy A54',       cat:'Batteria', desc:'Batteria originale Samsung', pac:32, pven:49 },
+    { mod:'Galaxy A34',       cat:'Batteria', desc:'Batteria originale Samsung', pac:29, pven:45 },
+    // Galaxy Z Fold/Flip
+    { mod:'Galaxy Z Fold6',  cat:'Schermo', desc:'Display interno pieghevole', pac:449, pven:699 },
+    { mod:'Galaxy Z Flip6',  cat:'Schermo', desc:'Display interno pieghevole', pac:299, pven:469 },
+    { mod:'Galaxy Z Fold5',  cat:'Schermo', desc:'Display interno pieghevole', pac:399, pven:619 },
+    { mod:'Galaxy Z Flip5',  cat:'Schermo', desc:'Display interno pieghevole', pac:269, pven:419 },
+  ],
+  xiaomi: [
+    { mod:'Xiaomi 14 Ultra', cat:'Schermo', desc:'Display AMOLED LTPO', pac:219, pven:339 },
+    { mod:'Xiaomi 14 Pro',   cat:'Schermo', desc:'Display AMOLED LTPO', pac:189, pven:299 },
+    { mod:'Xiaomi 14',       cat:'Schermo', desc:'Display AMOLED',      pac:159, pven:249 },
+    { mod:'Xiaomi 13 Ultra', cat:'Schermo', desc:'Display AMOLED LTPO', pac:199, pven:309 },
+    { mod:'Redmi Note 13 Pro+', cat:'Schermo', desc:'Display AMOLED', pac:99, pven:155 },
+    { mod:'Redmi Note 13 Pro',  cat:'Schermo', desc:'Display AMOLED', pac:79, pven:124 },
+    { mod:'Redmi Note 13',      cat:'Schermo', desc:'Display AMOLED', pac:59, pven:93  },
+    { mod:'Redmi 13C',          cat:'Schermo', desc:'Display LCD',    pac:39, pven:62  },
+    { mod:'Xiaomi 14',       cat:'Batteria', desc:'Batteria originale', pac:45, pven:69 },
+    { mod:'Redmi Note 13',   cat:'Batteria', desc:'Batteria originale', pac:29, pven:45 },
+  ],
+  huawei: [
+    { mod:'Huawei P60 Pro',  cat:'Schermo', desc:'Display OLED',  pac:189, pven:299 },
+    { mod:'Huawei P50 Pro',  cat:'Schermo', desc:'Display OLED',  pac:159, pven:249 },
+    { mod:'Huawei Mate 60 Pro', cat:'Schermo', desc:'Display OLED', pac:219, pven:339 },
+    { mod:'Huawei Nova 11',  cat:'Schermo', desc:'Display OLED',  pac:99,  pven:155 },
+    { mod:'Huawei P60 Pro',  cat:'Batteria', desc:'Batteria originale', pac:49, pven:75 },
+    { mod:'Huawei P50 Pro',  cat:'Batteria', desc:'Batteria originale', pac:42, pven:65 },
+  ]
+};
+
+function apriListino() {
+  renderListino();
+  apriM('modal-listino');
+}
+
+function renderListino() {
+  var brand = document.getElementById('lst-brand').value;
+  var cat   = document.getElementById('lst-cat').value;
+  var q     = document.getElementById('lst-search').value.toLowerCase().trim();
+  var data  = LISTINO[brand] || [];
+
+  var filtered = data.filter(function(x) {
+    if (cat && x.cat !== cat) return false;
+    if (q && x.mod.toLowerCase().indexOf(q) === -1 && x.desc.toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  });
+
+  var brandLabel = { apple:'Apple', samsung:'Samsung', xiaomi:'Xiaomi', huawei:'Huawei' };
+  var html = '<table style="width:100%"><thead><tr>'
+    + '<th>Modello</th><th>Categoria</th><th>Descrizione</th>'
+    + '<th>P.Acq EUR</th><th>P.Vend EUR</th><th>Azione</th>'
+    + '</tr></thead><tbody>';
+
+  if (!filtered.length) {
+    html += '<tr><td colspan="6" style="text-align:center;padding:32px;color:#555">Nessun risultato</td></tr>';
+  } else {
+    for (var i = 0; i < filtered.length; i++) {
+      var x = filtered[i];
+      var margine = x.pven - x.pac;
+      var margPct = Math.round((margine / x.pven) * 100);
+      html += '<tr>'
+        + '<td><b>' + x.mod + '</b></td>'
+        + '<td><span style="font-size:11px;background:#1a1a1a;padding:2px 7px;border-radius:10px">' + x.cat + '</span></td>'
+        + '<td style="font-size:12px;color:#888">' + x.desc + '</td>'
+        + '<td style="color:#ff8800;font-weight:700">EUR ' + x.pac.toFixed(2) + '</td>'
+        + '<td><b style="color:#40d080">EUR ' + x.pven.toFixed(2) + '</b><br><span style="font-size:10px;color:#555">+' + margPct + '% margine</span></td>'
+        + '<td><button class="btn btn-g btn-sm" style="border-color:#4080ff;color:#4080ff;white-space:nowrap" data-brand="' + brand + '" data-idx="' + i + '" onclick="importaDaListino(+this.dataset.idx, this.dataset.brand)">+ Aggiungi</button></td>'
+        + '</tr>';
+    }
+  }
+  html += '</tbody></table>';
+  document.getElementById('lst-tb').innerHTML = html;
+}
+
+function importaDaListino(idx, brand) {
+  var cat   = document.getElementById('lst-cat').value;
+  var q     = document.getElementById('lst-search').value.toLowerCase().trim();
+  var data  = LISTINO[brand] || [];
+  var filtered = data.filter(function(x) {
+    if (cat && x.cat !== cat) return false;
+    if (q && x.mod.toLowerCase().indexOf(q) === -1 && x.desc.toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  });
+  var x = filtered[idx];
+  if (!x) return;
+  // Controlla se esiste già
+  var esistente = ML.findIndex(function(m) { return m.desc.toLowerCase() === (x.mod + ' - ' + x.desc).toLowerCase(); });
+  if (esistente >= 0) {
+    if (!confirm('Articolo già presente. Aggiornare i prezzi?')) return;
+    ML[esistente].pac  = x.pac;
+    ML[esistente].pven = x.pven;
+    salva(); renderMag();
+    toast('Prezzi aggiornati', x.mod);
+    return;
+  }
+  ML.push({
+    cod: brand.toUpperCase().substring(0,3) + '-' + x.mod.replace(/[^a-zA-Z0-9]/g,'').substring(0,8).toUpperCase(),
+    desc: x.mod + ' - ' + x.desc,
+    cat: x.cat,
+    qty: 0,
+    min: 1,
+    pac: x.pac,
+    pven: x.pven
+  });
+  salva(); renderMag();
+  toast('Aggiunto!', x.mod + ' - ' + x.cat);
+}
+
 aggiornaSidebar();
 aggiornaLogo();
 initGriglia('new');
