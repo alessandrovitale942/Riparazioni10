@@ -11,7 +11,7 @@ body { background: #0a0a0a; color: #f0f0f0; font-family: 'DM Sans', sans-serif; 
 .app { display: flex; min-height: 100vh; }
 
 /* SIDEBAR */
-.sidebar { width: 220px; background: #111; border-right: 1px solid #222; position: fixed; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; z-index: 50; }
+.sidebar { width: 258px; background: #111; border-right: 1px solid #222; position: fixed; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; z-index: 50; }
 .logo { padding: 18px 16px; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 10px; }
 .logo-icon { width: 38px; height: 38px; background: linear-gradient(135deg, #ff2200, #ff8800); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
 .logo-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: #ff5500; }
@@ -23,7 +23,7 @@ body { background: #0a0a0a; color: #f0f0f0; font-family: 'DM Sans', sans-serif; 
 .nav-btn.on { background: linear-gradient(90deg, #ff2200, #ff5500); color: #fff; font-weight: 600; }
 
 /* MAIN */
-.main { margin-left: 220px; flex: 1; padding: 28px 30px; }
+.main { margin-left: 258px; flex: 1; padding: 28px 30px; }
 .page-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; }
 .page-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; }
 .page-title small { font-size: 13px; color: #555; font-weight: 400; margin-left: 8px; }
@@ -145,6 +145,7 @@ textarea.inp { resize: vertical; min-height: 65px; }
     <button class="nav-btn"    id="nb-riparazioni"  onclick="vai('riparazioni',this)">&#128295; Riparazioni</button>
     <button class="nav-btn"    id="nb-clienti"      onclick="vai('clienti',this)">&#128101; Clienti</button>
     <button class="nav-btn"    id="nb-magazzino"    onclick="vai('magazzino',this)">&#128230; Magazzino</button>
+    <button class="nav-btn"    id="nb-ordini"      onclick="vai('ordini',this)">&#128666; Ordini Clienti <span id="nb-ordini-cnt" style="background:#4080ff;color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 6px;margin-left:auto;display:none">0</span></button>
     <button class="nav-btn"    id="nb-fatture"      onclick="vai('fatture',this)">&#129534; Fatture</button>
     <button class="nav-btn"    id="nb-statistiche"  onclick="vai('statistiche',this)">&#128200; Statistiche</button>
     <button class="nav-btn"    id="nb-storico"      onclick="vai('storico',this)">&#128203; Storico</button>
@@ -237,6 +238,32 @@ textarea.inp { resize: vertical; min-height: 65px; }
   </div>
   <div class="card">
     <table><thead><tr><th>Codice</th><th>Descrizione</th><th>Cat.</th><th>Qta</th><th>P.Acq EUR</th><th>P.Vend EUR</th><th>Azioni</th></tr></thead><tbody id="mag-tb"></tbody></table>
+  </div>
+</section>
+
+<!-- ORDINI CLIENTI -->
+<section id="sec-ordini" class="sec">
+  <div class="page-h">
+    <div class="page-title">&#128666; Ordini Clienti</div>
+    <button class="btn btn-p" onclick="apriNuovoOrdine()">+ Nuovo Ordine</button>
+  </div>
+  <div id="ord-alert"></div>
+  <div class="card" style="margin-bottom:12px">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <input class="inp" id="ord-search" placeholder="&#128269; Cerca per cliente o articolo..." style="flex:1;min-width:200px" oninput="renderOrdini()">
+      <select class="inp" id="ord-filter-stato" style="width:170px" onchange="renderOrdini()">
+        <option value="">Tutti gli stati</option>
+        <option value="In attesa">In attesa</option>
+        <option value="Ordinato">Ordinato</option>
+        <option value="Arrivato">Arrivato</option>
+        <option value="Consegnato">Consegnato</option>
+        <option value="Annullato">Annullato</option>
+      </select>
+    </div>
+    <div id="ord-info" style="font-size:11px;color:#555;margin-top:8px;font-family:'DM Mono',monospace"></div>
+  </div>
+  <div class="card">
+    <table><thead><tr><th>ID</th><th>Cliente</th><th>Articolo</th><th>Qta</th><th>Note</th><th>Data</th><th>Stato</th><th>Azioni</th></tr></thead><tbody id="ord-tb"></tbody></table>
   </div>
 </section>
 
@@ -661,6 +688,43 @@ textarea.inp { resize: vertical; min-height: 65px; }
   </div>
 </div>
 
+<!-- MODAL NUOVO ORDINE -->
+<div class="modal-bg" id="modal-nord">
+  <div class="modal" style="width:520px">
+    <div class="modal-hd">
+      <div class="modal-t" id="nord-title">Nuovo Ordine Cliente</div>
+      <button class="modal-x" onclick="chiudiM('modal-nord')">x</button>
+    </div>
+    <div class="modal-b">
+      <input type="hidden" id="nord-idx" value="-1">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label class="fl">Cliente *</label><input class="inp" id="nord-nome" placeholder="Nome cliente"></div>
+        <div class="fg"><label class="fl">Telefono</label><input class="inp" id="nord-tel" placeholder="3331234567"></div>
+      </div>
+      <div class="fg" style="margin-top:10px"><label class="fl">Articolo / Ricambio *</label><input class="inp" id="nord-art" placeholder="Es: Schermo iPhone 15 Pro OLED originale"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px">
+        <div class="fg"><label class="fl">Quantita</label><input class="inp" id="nord-qty" type="number" min="1" value="1"></div>
+        <div class="fg"><label class="fl">Costo EUR</label><input class="inp" id="nord-costo" type="number" step="0.01" min="0" placeholder="0.00"></div>
+        <div class="fg"><label class="fl">Data prevista</label><input class="inp" id="nord-data" type="date"></div>
+      </div>
+      <div class="fg" style="margin-top:10px"><label class="fl">Note</label><textarea class="inp" id="nord-note" placeholder="Note aggiuntive..." style="min-height:70px"></textarea></div>
+      <div class="fg" style="margin-top:10px"><label class="fl">Stato</label>
+        <select class="inp" id="nord-stato">
+          <option>In attesa</option>
+          <option>Ordinato</option>
+          <option>Arrivato</option>
+          <option>Consegnato</option>
+          <option>Annullato</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-g" onclick="chiudiM('modal-nord')">Annulla</button>
+      <button class="btn btn-p" onclick="salvaOrdine()">Salva Ordine</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL MODIFICA MAGAZZINO -->
 <div class="modal-bg" id="modal-em">
   <div class="modal" style="width:500px">
@@ -783,6 +847,7 @@ function vai(id, btn) {
   if (id === 'riparazioni') renderRip();
   if (id === 'clienti')     renderClienti();
   if (id === 'magazzino')   renderMag();
+  if (id === 'ordini')      renderOrdini();
   if (id === 'fatture')     renderFat();
   if (id === 'storico')     renderStorico();
   if (id === 'statistiche') renderStats();
@@ -2428,6 +2493,159 @@ function importaDaListino(idx, brand) {
   toast('Aggiunto!', x.mod + ' - ' + x.cat);
 }
 
+// ============================================================
+// ORDINI CLIENTI
+// ============================================================
+var OL = JSON.parse(localStorage.getItem('rp_ol') || '[]');
+var OID = parseInt(localStorage.getItem('rp_oid') || '0');
+
+function apriNuovoOrdine() {
+  document.getElementById('nord-idx').value = '-1';
+  document.getElementById('nord-title').textContent = 'Nuovo Ordine Cliente';
+  ['nord-nome','nord-tel','nord-art','nord-note'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('nord-qty').value = '1';
+  document.getElementById('nord-costo').value = '';
+  document.getElementById('nord-data').value = '';
+  document.getElementById('nord-stato').value = 'In attesa';
+  apriM('modal-nord');
+}
+
+function apriModificaOrdine(id) {
+  var o = OL.find(function(x){ return x.id === id; });
+  if (!o) return;
+  document.getElementById('nord-idx').value = id;
+  document.getElementById('nord-title').textContent = 'Modifica Ordine #O' + String(id).padStart(3,'0');
+  document.getElementById('nord-nome').value = o.nome || '';
+  document.getElementById('nord-tel').value = o.tel || '';
+  document.getElementById('nord-art').value = o.art || '';
+  document.getElementById('nord-qty').value = o.qty || 1;
+  document.getElementById('nord-costo').value = o.costo || '';
+  document.getElementById('nord-data').value = o.data || '';
+  document.getElementById('nord-note').value = o.note || '';
+  document.getElementById('nord-stato').value = o.stato || 'In attesa';
+  apriM('modal-nord');
+}
+
+function salvaOrdine() {
+  var nome = document.getElementById('nord-nome').value.trim();
+  var art  = document.getElementById('nord-art').value.trim();
+  if (!nome) { alert('Inserisci il nome del cliente'); return; }
+  if (!art)  { alert('Inserisci l articolo ordinato'); return; }
+  var idx = document.getElementById('nord-idx').value;
+  var isNew = idx === '-1';
+  if (isNew) OID++;
+  var obj = {
+    id:    isNew ? OID : parseInt(idx),
+    nome:  nome,
+    tel:   document.getElementById('nord-tel').value.trim(),
+    art:   art,
+    qty:   parseInt(document.getElementById('nord-qty').value) || 1,
+    costo: parseFloat(document.getElementById('nord-costo').value) || 0,
+    data:  document.getElementById('nord-data').value,
+    note:  document.getElementById('nord-note').value.trim(),
+    stato: document.getElementById('nord-stato').value,
+    ts:    isNew ? Date.now() : (OL.find(function(x){return x.id===parseInt(idx);})||{}).ts || Date.now()
+  };
+  if (isNew) {
+    OL.unshift(obj);
+  } else {
+    var i = OL.findIndex(function(x){ return x.id === obj.id; });
+    if (i >= 0) OL[i] = obj;
+  }
+  localStorage.setItem('rp_ol', JSON.stringify(OL));
+  localStorage.setItem('rp_oid', String(OID));
+  chiudiM('modal-nord');
+  renderOrdini();
+  aggiornaNotifOrdini();
+  toast(isNew ? 'Ordine creato!' : 'Ordine aggiornato', nome + ' - ' + art);
+}
+
+function eliminaOrdine(id) {
+  if (!confirm('Eliminare questo ordine?')) return;
+  OL = OL.filter(function(x){ return x.id !== id; });
+  localStorage.setItem('rp_ol', JSON.stringify(OL));
+  renderOrdini();
+  aggiornaNotifOrdini();
+}
+
+function cambiaStatoOrdine(id, val) {
+  var o = OL.find(function(x){ return x.id === id; });
+  if (!o) return;
+  var vecchio = o.stato;
+  o.stato = val;
+  localStorage.setItem('rp_ol', JSON.stringify(OL));
+  if (val === 'Arrivato' && vecchio !== 'Arrivato') {
+    toast('Ordine arrivato!', o.art + ' per ' + o.nome);
+  }
+  renderOrdini();
+  aggiornaNotifOrdini();
+}
+
+function aggiornaNotifOrdini() {
+  var cnt = OL.filter(function(x){ return x.stato === 'Arrivato'; }).length;
+  var el = document.getElementById('nb-ordini-cnt');
+  if (el) { el.textContent = cnt; el.style.display = cnt > 0 ? 'inline' : 'none'; }
+}
+
+function renderOrdini() {
+  var qEl = document.getElementById('ord-search');
+  var stEl = document.getElementById('ord-filter-stato');
+  var q = qEl ? qEl.value.toLowerCase().trim() : '';
+  var stato = stEl ? stEl.value : '';
+
+  var filtered = OL.filter(function(o) {
+    if (q && o.nome.toLowerCase().indexOf(q)===-1 && o.art.toLowerCase().indexOf(q)===-1) return false;
+    if (stato && o.stato !== stato) return false;
+    return true;
+  });
+
+  var arrivati = OL.filter(function(x){ return x.stato==='Arrivato'; });
+  document.getElementById('ord-alert').innerHTML = arrivati.length
+    ? '<div class="alert alert-w">&#128666; <b>' + arrivati.length + ' ordine/i arrivato/i</b> — da consegnare al cliente</div>' : '';
+
+  var infoEl = document.getElementById('ord-info');
+  if (infoEl) {
+    var inCorso = OL.filter(function(x){return x.stato==='In attesa'||x.stato==='Ordinato';}).length;
+    infoEl.innerHTML = OL.length + ' ordini totali &nbsp;&bull;&nbsp; <b style="color:#4080ff">' + inCorso + ' in corso</b> &nbsp;&bull;&nbsp; <b style="color:#40d080">' + arrivati.length + ' arrivati</b>';
+  }
+
+  var tb = document.getElementById('ord-tb');
+  if (!tb) return;
+  if (!filtered.length) {
+    tb.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:36px;color:#555">' + (OL.length ? 'Nessun risultato' : 'Nessun ordine ancora') + '</td></tr>';
+    return;
+  }
+
+  var stati = ['In attesa','Ordinato','Arrivato','Consegnato','Annullato'];
+  var html = '';
+  for (var i = 0; i < filtered.length; i++) {
+    var o = filtered[i];
+    var dataStr = o.data ? new Date(o.data).toLocaleDateString('it-IT') : '-';
+    var tsStr   = new Date(o.ts).toLocaleDateString('it-IT');
+    var opts = stati.map(function(s){ return '<option' + (s===o.stato?' selected':'') + '>' + s + '</option>'; }).join('');
+    var idStr = '#O' + String(o.id).padStart(3,'0');
+    var statoColor = {
+      'In attesa':'#888','Ordinato':'#4080ff',
+      'Arrivato':'#40d080','Consegnato':'#555','Annullato':'#ff2200'
+    }[o.stato] || '#888';
+    html += '<tr>'
+      + '<td><code style="color:#4080ff">' + idStr + '</code></td>'
+      + '<td><b>' + o.nome + '</b>' + (o.tel ? '<br><small style="color:#555">' + o.tel + '</small>' : '') + '</td>'
+      + '<td><b>' + o.art + '</b>' + (o.note ? '<br><small style="color:#666">' + o.note + '</small>' : '') + '</td>'
+      + '<td style="text-align:center">' + o.qty + '</td>'
+      + '<td>' + (o.costo ? 'EUR ' + o.costo.toFixed(2) : '-') + '</td>'
+      + '<td>' + dataStr + '<br><small style="color:#444">' + tsStr + '</small></td>'
+      + '<td><select class="inp btn-sm" style="width:130px;color:' + statoColor + '" onchange="cambiaStatoOrdine(' + o.id + ',this.value)">' + opts + '</select></td>'
+      + '<td style="white-space:nowrap">'
+        + '<button class="btn btn-g btn-sm" style="border-color:#ff8800;color:#ff8800;margin-right:3px" onclick="apriModificaOrdine(' + o.id + ')">Modif.</button>'
+        + '<button class="btn btn-d btn-sm" onclick="eliminaOrdine(' + o.id + ')">X</button>'
+      + '</td></tr>';
+  }
+  tb.innerHTML = html;
+}
+
+
+aggiornaNotifOrdini();
 aggiornaSidebar();
 aggiornaLogo();
 initGriglia('new');
