@@ -11,7 +11,7 @@ body { background: #0a0a0a; color: #f0f0f0; font-family: 'DM Sans', sans-serif; 
 .app { display: flex; min-height: 100vh; }
 
 /* SIDEBAR */
-.sidebar { width: 220px; background: #111; border-right: 1px solid #222; position: fixed; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; z-index: 50; }
+.sidebar { width: 258px; background: #111; border-right: 1px solid #222; position: fixed; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; z-index: 50; }
 .logo { padding: 18px 16px; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 10px; }
 .logo-icon { width: 38px; height: 38px; background: linear-gradient(135deg, #ff2200, #ff8800); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
 .logo-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: #ff5500; }
@@ -23,7 +23,7 @@ body { background: #0a0a0a; color: #f0f0f0; font-family: 'DM Sans', sans-serif; 
 .nav-btn.on { background: linear-gradient(90deg, #ff2200, #ff5500); color: #fff; font-weight: 600; }
 
 /* MAIN */
-.main { margin-left: 220px; flex: 1; padding: 28px 30px; }
+.main { margin-left: 258px; flex: 1; padding: 28px 30px; }
 .page-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; }
 .page-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; }
 .page-title small { font-size: 13px; color: #555; font-weight: 400; margin-left: 8px; }
@@ -144,6 +144,7 @@ textarea.inp { resize: vertical; min-height: 65px; }
     <button class="nav-btn"    id="nb-riparazioni"  onclick="vai('riparazioni',this)">&#128295; Riparazioni</button>
     <button class="nav-btn"    id="nb-clienti"      onclick="vai('clienti',this)">&#128101; Clienti</button>
     <button class="nav-btn"    id="nb-magazzino"    onclick="vai('magazzino',this)">&#128230; Magazzino</button>
+    <button class="nav-btn"    id="nb-ordini"      onclick="vai('ordini',this)">&#128666; Ordini Clienti <span id="nb-ordini-cnt" style="background:#4080ff;color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 6px;margin-left:4px;display:none">0</span></button>
     <button class="nav-btn"    id="nb-fatture"      onclick="vai('fatture',this)">&#129534; Fatture</button>
     <button class="nav-btn"    id="nb-statistiche"  onclick="vai('statistiche',this)">&#128200; Statistiche</button>
     <button class="nav-btn"    id="nb-storico"      onclick="vai('storico',this)">&#128203; Storico</button>
@@ -216,8 +217,52 @@ textarea.inp { resize: vertical; min-height: 65px; }
     <button class="btn btn-p" onclick="mostraModaleM()">+ Aggiungi Pezzo</button>
   </div>
   <div id="mag-alert"></div>
+  <div class="card" style="margin-bottom:12px">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <input class="inp" id="mag-search" placeholder="&#128269; Cerca descrizione, codice o categoria..." style="flex:1;min-width:200px" oninput="renderMag()">
+      <select class="inp" id="mag-filter-cat" style="width:155px" onchange="renderMag()">
+        <option value="">Tutte le categorie</option>
+        <option>Schermo</option><option>Batteria</option><option>Connettore</option>
+        <option>Fotocamera</option><option>Scocca</option><option>Scheda madre</option><option>Altro</option>
+      </select>
+      <select class="inp" id="mag-filter-disp" style="width:145px" onchange="renderMag()">
+        <option value="">Tutti</option>
+        <option value="disp">Disponibili</option>
+        <option value="esau">Esauriti</option>
+        <option value="bassa">Scorta bassa</option>
+      </select>
+      <button class="btn btn-g btn-sm" style="border-color:#4080ff;color:#4080ff;white-space:nowrap" onclick="apriListino()">&#128176; Listino Ufficiale</button>
+    </div>
+    <div id="mag-search-info" style="font-size:11px;color:#555;margin-top:8px;font-family:'DM Mono',monospace"></div>
+  </div>
   <div class="card">
     <table><thead><tr><th>Codice</th><th>Descrizione</th><th>Cat.</th><th>Qta</th><th>P.Acq EUR</th><th>P.Vend EUR</th><th>Azioni</th></tr></thead><tbody id="mag-tb"></tbody></table>
+  </div>
+</section>
+
+<!-- ORDINI CLIENTI -->
+<section id="sec-ordini" class="sec">
+  <div class="page-h">
+    <div class="page-title">&#128666; Ordini Clienti</div>
+    <button class="btn btn-p" onclick="apriNuovoOrdine()">+ Nuovo Ordine</button>
+  </div>
+  <div id="ord-alert"></div>
+  <div class="card" style="margin-bottom:12px">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <input class="inp" id="ord-search" placeholder="&#128269; Cerca cliente o articolo..." style="flex:1;min-width:200px" oninput="renderOrdini()">
+      <select class="inp" id="ord-filter-stato" style="width:170px" onchange="renderOrdini()">
+        <option value="">Tutti gli stati</option>
+        <option value="In attesa">In attesa</option>
+        <option value="Ordinato">Ordinato</option>
+        <option value="Arrivato">Arrivato</option>
+        <option value="Consegnato">Consegnato</option>
+        <option value="Annullato">Annullato</option>
+      </select>
+    </div>
+    <div id="ord-info" style="font-size:11px;color:#555;margin-top:8px;font-family:'DM Mono',monospace"></div>
+  </div>
+  <div class="card">
+    <table><thead><tr><th>ID</th><th>Cliente</th><th>Articolo</th><th>Qta</th><th>Costo</th><th>Data</th><th>Stato</th><th>Azioni</th></tr></thead><tbody id="ord-tb"></tbody></table>
   </div>
 </section>
 
@@ -402,6 +447,7 @@ textarea.inp { resize: vertical; min-height: 65px; }
       </div>
       <div class="fg"><label class="fl">Problema Segnalato *</label><textarea class="inp" id="nr-problema" placeholder="Es: schermo rotto..."></textarea></div>
       <div class="fg"><label class="fl">Note Tecniche</label><textarea class="inp" id="nr-note" placeholder="Note interne..."></textarea></div>
+      <div class="fg"><label class="fl">Stato Preventivo WhatsApp</label><select class="inp" id="nr-wa-stato"><option value="">— Nessuno —</option><option value="inviato">&#128228; Inviato</option><option value="accettato">&#9989; Accettato</option><option value="rifiutato">&#10060; Rifiutato</option></select></div>
     </div>
     <div class="modal-ft">
       <button class="btn btn-g" onclick="chiudiM('modal-r')">Annulla</button>
@@ -497,6 +543,7 @@ textarea.inp { resize: vertical; min-height: 65px; }
       </div>
       <div class="fg"><label class="fl">Problema Segnalato *</label><textarea class="inp" id="e-problema"></textarea></div>
       <div class="fg"><label class="fl">Note Tecniche</label><textarea class="inp" id="e-note"></textarea></div>
+      <div class="fg"><label class="fl">Stato Preventivo WhatsApp</label><select class="inp" id="e-wa-stato"><option value="">— Nessuno —</option><option value="inviato">&#128228; Inviato</option><option value="accettato">&#9989; Accettato</option><option value="rifiutato">&#10060; Rifiutato</option></select></div>
     </div>
     <div class="modal-ft">
       <button class="btn btn-g" onclick="chiudiM('modal-e')">Annulla</button>
@@ -512,7 +559,8 @@ textarea.inp { resize: vertical; min-height: 65px; }
     <div class="modal-b"><div id="scheda-body"></div></div>
     <div class="modal-ft">
       <button class="btn btn-g" onclick="chiudiM('modal-s')">Chiudi</button>
-      <button class="btn btn-p" onclick="stampaScheda()">Stampa</button>
+      <button class="btn btn-g" style="border-color:#40d080;color:#40d080" onclick="stampaPOS()">&#128438; POS 80mm</button>
+      <button class="btn btn-p" onclick="stampaScheda()">&#128438; Stampa A4</button>
     </div>
   </div>
 </div>
@@ -655,6 +703,7 @@ function vai(id, btn) {
   if (id === 'riparazioni') renderRip();
   if (id === 'clienti')     renderClienti();
   if (id === 'magazzino')   renderMag();
+  if (id === 'ordini')      renderOrdini();
   if (id === 'fatture')     renderFat();
   if (id === 'storico')     renderStorico();
   if (id === 'statistiche') renderStats();
@@ -941,6 +990,7 @@ function salvaRip() {
     estetica: document.getElementById('nr-estetica').value,
     consegna: document.getElementById('nr-consegna').value,
     stato: document.getElementById('nr-stato').value,
+    waStato: document.getElementById('nr-wa-stato') ? document.getElementById('nr-wa-stato').value : '',
     datric: document.getElementById('nr-datric').value,
     esito: document.getElementById('nr-esito').value,
     problema: document.getElementById('nr-problema').value,
@@ -955,6 +1005,7 @@ function salvaRip() {
   renderNotif();
   // reset form
   var ids = ['nr-nome','nr-tel','nr-email','nr-device','nr-imei','nr-costo','nr-pin','nr-problema','nr-note','nr-consegna','nr-datric'];
+  var elWa = document.getElementById('nr-wa-stato'); if (elWa) elWa.value = '';
   for (var i = 0; i < ids.length; i++) document.getElementById(ids[i]).value = '';
   document.getElementById('nr-stato').value = 'In attesa';
   document.getElementById('nr-esito').value = '';
@@ -994,7 +1045,7 @@ function renderRip(lista) {
     }
     html += '<tr>'
       + '<td><b style="font-family:monospace;color:#ff5500">#' + r.id + '</b></td>'
-      + '<td><b>' + r.nome + '</b><br><small style="color:#555">' + (r.tel || '') + '</small></td>'
+      + '<td><b>' + r.nome + '</b><br><small style="color:#555">' + (r.tel || '') + '</small>'        + (r.waStato === 'accettato' ? '<br><span style="display:inline-block;margin-top:2px;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:700;background:#d1fae5;color:#065f46">&#9989; Accettato</span>' : '')        + (r.waStato === 'rifiutato' ? '<br><span style="display:inline-block;margin-top:2px;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:700;background:#fee2e2;color:#991b1b">&#10060; Rifiutato</span>' : '')        + (r.waStato === 'inviato'   ? '<br><span style="display:inline-block;margin-top:2px;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:700;background:#fef3c7;color:#92400e">&#128228; Inviato</span>' : '')      + '</td>'
       + '<td>' + r.device + '</td>'
       + '<td><span style="font-size:11px;color:#888">' + (r.tipo || '-') + '</span></td>'
       + '<td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (r.problema || '-') + '</td>'
@@ -1067,6 +1118,7 @@ function apriModifica(id) {
   document.getElementById('e-datric').value = r.datric || '';
   document.getElementById('e-problema').value = r.problema || '';
   document.getElementById('e-note').value = r.note || '';
+  if (document.getElementById('e-wa-stato')) document.getElementById('e-wa-stato').value = r.waStato || '';
   caricaGriglia('edit', r.schema || '');
   setTimeout(function() { caricaEst('e', r.estetica || '8'); }, 30);
   apriM('modal-e');
@@ -1106,6 +1158,7 @@ function aggiornaRip() {
   r.datric = document.getElementById('e-datric').value;
   r.problema = document.getElementById('e-problema').value;
   r.note = document.getElementById('e-note').value;
+  r.waStato = document.getElementById('e-wa-stato') ? document.getElementById('e-wa-stato').value : '';
   salva();
   chiudiM('modal-e');
   renderRip();
@@ -1143,7 +1196,9 @@ function box(lbl, val) {
     + '<div style="font-weight:600;font-size:13px">' + (val || '-') + '</div></div>';
 }
 
+var scedaAttivaId = null;
 function apriScheda(id) {
+  scedaAttivaId = id;
   var r = null;
   for (var i = 0; i < RL.length; i++) { if (RL[i].id === id) { r = RL[i]; break; } }
   if (!r) return;
@@ -1172,7 +1227,7 @@ function apriScheda(id) {
         + '<div style="font-size:20px;font-weight:800;color:#ff5500">SCHEDA #' + r.id + '</div>'
         + '<div style="font-size:12px;color:#999">' + r.data + '</div>'
         + (r.consegna ? '<div style="font-size:12px;color:#ff5500;font-weight:600">Consegna: ' + r.consegna + '</div>' : '')
-        + (r.dataConsegnato ? '<div style="font-size:12px;font-weight:700;color:#22c55e">&#10003; Consegnato il: ' + r.dataConsegnato + '</div>' : '')
+        + (r.dataConsegnato ? '<div style="font-size:12px;font-weight:700;color:#22c55e">&#10003; Consegnato il: ' + r.dataConsegnato + '</div>' : '')        + (r.waStato ? '<div style="font-size:12px;margin-top:4px"><span style="padding:2px 10px;border-radius:20px;font-weight:700;' + (r.waStato==='accettato'?'background:#d1fae5;color:#065f46':r.waStato==='rifiutato'?'background:#fee2e2;color:#991b1b':'background:#fef3c7;color:#92400e') + '">' + (r.waStato==='accettato'?'&#9989; Preventivo Accettato':r.waStato==='rifiutato'?'&#10060; Preventivo Rifiutato':'&#128228; Preventivo Inviato') + '</span></div>' : '')
       + '</div>'
     + '</div>'
     + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:10px">'
@@ -1481,19 +1536,46 @@ function renderMag() {
     ? '<div class="alert alert-w"><b>' + sc.length + ' articolo/i</b> sotto scorta minima</div>' : '';
   var tb = document.getElementById('mag-tb');
   if (!ML.length) { tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:36px;color:#555">Magazzino vuoto</td></tr>'; return; }
-  var html = '';
+  var q    = document.getElementById('mag-search') ? document.getElementById('mag-search').value.toLowerCase().trim() : '';
+  var cat  = document.getElementById('mag-filter-cat') ? document.getElementById('mag-filter-cat').value : '';
+  var disp = document.getElementById('mag-filter-disp') ? document.getElementById('mag-filter-disp').value : '';
+  var filtered = [];
   for (var i = 0; i < ML.length; i++) {
     var m = ML[i];
-    html += '<tr>'
-      + '<td><code style="color:#ff8800">' + m.cod + '</code></td>'
+    if (q && (m.desc||'').toLowerCase().indexOf(q)===-1 && (m.cod||'').toLowerCase().indexOf(q)===-1 && (m.cat||'').toLowerCase().indexOf(q)===-1) continue;
+    if (cat && m.cat !== cat) continue;
+    if (disp === 'disp' && m.qty <= 0) continue;
+    if (disp === 'esau' && m.qty > 0) continue;
+    if (disp === 'bassa' && m.qty > m.min) continue;
+    filtered.push({ m: m, i: i });
+  }
+  var infoEl = document.getElementById('mag-search-info');
+  if (infoEl) {
+    if (q || cat || disp) {
+      infoEl.innerHTML = '&#128269; ' + filtered.length + ' risultat' + (filtered.length===1?'o':'i') + ' su ' + ML.length;
+    } else {
+      infoEl.innerHTML = ML.length + ' articoli &nbsp;&bull;&nbsp; <b style="color:#40d080">' + ML.filter(function(x){return x.qty>x.min;}).length + ' disponibili</b> &nbsp;&bull;&nbsp; <b style="color:#ff2200">' + sc.length + ' sotto scorta</b>';
+    }
+  }
+  if (!filtered.length) { tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:36px;color:#555">Nessun risultato</td></tr>'; return; }
+  var html = '';
+  for (var j = 0; j < filtered.length; j++) {
+    var m = filtered[j].m; var i = filtered[j].i;
+    var esaurito = m.qty === 0; var bassa = m.qty > 0 && m.qty <= m.min;
+    var qColor = esaurito ? '#ff2200' : bassa ? '#ff8800' : '#40d080';
+    var qBadge = esaurito ? m.qty + ' <span style="font-size:10px;background:#330000;color:#ff4444;padding:1px 5px;border-radius:8px">ESAURITO</span>'
+               : bassa    ? m.qty + ' <span style="font-size:10px;background:#332200;color:#ff8800;padding:1px 5px;border-radius:8px">BASSA</span>' : m.qty;
+    html += '<tr style="' + (esaurito?'opacity:0.55':'') + '">'
+      + '<td><code style="color:#ff8800">' + (m.cod||'-') + '</code></td>'
       + '<td><b>' + m.desc + '</b></td>'
-      + '<td>' + m.cat + '</td>'
-      + '<td><b style="color:' + (m.qty <= m.min ? '#ff2200' : '#40d080') + '">' + m.qty + '</b>' + (m.qty <= m.min ? ' !' : '') + '</td>'
-      + '<td>EUR ' + m.pac.toFixed(2) + '</td>'
-      + '<td>EUR ' + m.pven.toFixed(2) + '</td>'
+      + '<td><span style="font-size:11px;background:#1a1a1a;padding:2px 7px;border-radius:10px">' + m.cat + '</span></td>'
+      + '<td><b style="color:' + qColor + '">' + qBadge + '</b></td>'
+      + '<td>EUR ' + (m.pac||0).toFixed(2) + '</td>'
+      + '<td><b>EUR ' + (m.pven||0).toFixed(2) + '</b></td>'
       + '<td style="white-space:nowrap">'
         + '<button class="btn btn-g btn-sm" style="border-color:#40d080;color:#40d080;margin-right:3px" data-mi="' + i + '" onclick="adjQta(+this.dataset.mi,1)">+</button>'
         + '<button class="btn btn-g btn-sm" style="margin-right:3px" data-mi="' + i + '" onclick="adjQta(+this.dataset.mi,-1)">-</button>'
+        + '<button class="btn btn-g btn-sm" style="border-color:#ff8800;color:#ff8800;margin-right:3px" data-mi="' + i + '" onclick="apriModMag(+this.dataset.mi)">Modif.</button>'
         + '<button class="btn btn-d btn-sm" data-mi="' + i + '" onclick="elimMag(+this.dataset.mi)">X</button>'
       + '</td></tr>';
   }
@@ -1502,6 +1584,32 @@ function renderMag() {
 
 function adjQta(i, d) { ML[i].qty = Math.max(0, ML[i].qty + d); salva(); renderMag(); }
 function elimMag(i) { if (!confirm('Eliminare?')) return; ML.splice(i, 1); salva(); renderMag(); }
+function apriModMag(i) {
+  var m = ML[i];
+  document.getElementById('em-idx').value = i;
+  document.getElementById('em-cod').value = m.cod||'';
+  document.getElementById('em-cat').value = m.cat||'Schermo';
+  document.getElementById('em-desc').value = m.desc||'';
+  document.getElementById('em-qty').value = m.qty||0;
+  document.getElementById('em-min').value = m.min||0;
+  document.getElementById('em-pac').value = m.pac||0;
+  document.getElementById('em-pven').value = m.pven||0;
+  apriM('modal-em');
+}
+function salvaModMag() {
+  var i = parseInt(document.getElementById('em-idx').value);
+  var desc = document.getElementById('em-desc').value.trim();
+  if (!desc) { alert('Inserisci la descrizione'); return; }
+  ML[i].cod  = document.getElementById('em-cod').value.trim();
+  ML[i].cat  = document.getElementById('em-cat').value;
+  ML[i].desc = desc;
+  ML[i].qty  = parseInt(document.getElementById('em-qty').value)||0;
+  ML[i].min  = parseInt(document.getElementById('em-min').value)||0;
+  ML[i].pac  = parseFloat(document.getElementById('em-pac').value)||0;
+  ML[i].pven = parseFloat(document.getElementById('em-pven').value)||0;
+  salva(); chiudiM('modal-em'); renderMag();
+  showToast('Aggiornato', ML[i].desc);
+}
 
 // ============================================================
 // FATTURE
@@ -1886,16 +1994,444 @@ function parseCSVLine(line) {
   return result;
 }
 
+
+// ============================================================
+// LISTINO PREZZI UFFICIALI
+// ============================================================
+var LISTINO = {
+  apple: [
+    { mod:'iPhone 16 Pro Max', cat:'Schermo',    desc:'Display OLED originale',     pac:289, pven:449 },
+    { mod:'iPhone 16 Pro',     cat:'Schermo',    desc:'Display OLED originale',     pac:259, pven:399 },
+    { mod:'iPhone 16 Plus',    cat:'Schermo',    desc:'Display OLED originale',     pac:219, pven:349 },
+    { mod:'iPhone 16',         cat:'Schermo',    desc:'Display OLED originale',     pac:189, pven:299 },
+    { mod:'iPhone 15 Pro Max', cat:'Schermo',    desc:'Display OLED originale',     pac:259, pven:389 },
+    { mod:'iPhone 15 Pro',     cat:'Schermo',    desc:'Display OLED originale',     pac:229, pven:359 },
+    { mod:'iPhone 15 Plus',    cat:'Schermo',    desc:'Display OLED originale',     pac:189, pven:299 },
+    { mod:'iPhone 15',         cat:'Schermo',    desc:'Display OLED originale',     pac:169, pven:269 },
+    { mod:'iPhone 14 Pro Max', cat:'Schermo',    desc:'Display OLED originale',     pac:219, pven:339 },
+    { mod:'iPhone 14 Pro',     cat:'Schermo',    desc:'Display OLED originale',     pac:199, pven:319 },
+    { mod:'iPhone 14 Plus',    cat:'Schermo',    desc:'Display OLED originale',     pac:169, pven:269 },
+    { mod:'iPhone 14',         cat:'Schermo',    desc:'Display OLED originale',     pac:149, pven:239 },
+    { mod:'iPhone 13 Pro Max', cat:'Schermo',    desc:'Display OLED originale',     pac:189, pven:299 },
+    { mod:'iPhone 13 Pro',     cat:'Schermo',    desc:'Display OLED originale',     pac:169, pven:269 },
+    { mod:'iPhone 13',         cat:'Schermo',    desc:'Display OLED originale',     pac:139, pven:219 },
+    { mod:'iPhone 13 Mini',    cat:'Schermo',    desc:'Display OLED originale',     pac:119, pven:189 },
+    { mod:'iPhone 12 Pro Max', cat:'Schermo',    desc:'Display OLED originale',     pac:159, pven:249 },
+    { mod:'iPhone 12 Pro',     cat:'Schermo',    desc:'Display OLED originale',     pac:149, pven:229 },
+    { mod:'iPhone 12',         cat:'Schermo',    desc:'Display OLED originale',     pac:129, pven:199 },
+    { mod:'iPhone 12 Mini',    cat:'Schermo',    desc:'Display OLED originale',     pac:109, pven:169 },
+    { mod:'iPhone 11 Pro Max', cat:'Schermo',    desc:'Display OLED originale',     pac:139, pven:219 },
+    { mod:'iPhone 11 Pro',     cat:'Schermo',    desc:'Display OLED originale',     pac:129, pven:199 },
+    { mod:'iPhone 11',         cat:'Schermo',    desc:'Display LCD originale',      pac:89,  pven:139 },
+    { mod:'iPhone 16 Pro Max', cat:'Batteria',   desc:'Batteria originale Apple',   pac:69,  pven:109 },
+    { mod:'iPhone 16 Pro',     cat:'Batteria',   desc:'Batteria originale Apple',   pac:65,  pven:99  },
+    { mod:'iPhone 16',         cat:'Batteria',   desc:'Batteria originale Apple',   pac:59,  pven:89  },
+    { mod:'iPhone 15 Pro Max', cat:'Batteria',   desc:'Batteria originale Apple',   pac:65,  pven:99  },
+    { mod:'iPhone 15',         cat:'Batteria',   desc:'Batteria originale Apple',   pac:55,  pven:85  },
+    { mod:'iPhone 14 Pro Max', cat:'Batteria',   desc:'Batteria originale Apple',   pac:59,  pven:89  },
+    { mod:'iPhone 14',         cat:'Batteria',   desc:'Batteria originale Apple',   pac:49,  pven:79  },
+    { mod:'iPhone 13',         cat:'Batteria',   desc:'Batteria originale Apple',   pac:49,  pven:75  },
+    { mod:'iPhone 12',         cat:'Batteria',   desc:'Batteria originale Apple',   pac:45,  pven:69  },
+    { mod:'iPhone 11',         cat:'Batteria',   desc:'Batteria originale Apple',   pac:39,  pven:59  },
+    { mod:'iPhone SE 3 gen',   cat:'Batteria',   desc:'Batteria originale Apple',   pac:39,  pven:59  },
+    { mod:'iPhone 15-16 USB-C',cat:'Connettore', desc:'Connettore ricarica USB-C',  pac:39,  pven:69  },
+    { mod:'iPhone 14 Lightning',cat:'Connettore',desc:'Connettore Lightning',        pac:29,  pven:49  },
+    { mod:'iPad Pro 12.9 2024',cat:'Schermo',    desc:'Display OLED originale',     pac:389, pven:599 },
+    { mod:'iPad Pro 11 2024',  cat:'Schermo',    desc:'Display OLED originale',     pac:299, pven:469 },
+    { mod:'iPad Air 13 2024',  cat:'Schermo',    desc:'Display LCD originale',      pac:189, pven:299 },
+    { mod:'iPad 10 gen',       cat:'Schermo',    desc:'Display LCD originale',      pac:129, pven:199 },
+    { mod:'iPad Mini 6',       cat:'Schermo',    desc:'Display LCD originale',      pac:149, pven:229 }
+  ],
+  samsung: [
+    { mod:'Galaxy S24 Ultra',  cat:'Schermo',   desc:'Display Dynamic AMOLED',      pac:269, pven:419 },
+    { mod:'Galaxy S24 Plus',   cat:'Schermo',   desc:'Display Dynamic AMOLED',      pac:229, pven:359 },
+    { mod:'Galaxy S24',        cat:'Schermo',   desc:'Display Dynamic AMOLED',      pac:189, pven:299 },
+    { mod:'Galaxy S23 Ultra',  cat:'Schermo',   desc:'Display Dynamic AMOLED',      pac:239, pven:369 },
+    { mod:'Galaxy S23 Plus',   cat:'Schermo',   desc:'Display Dynamic AMOLED',      pac:199, pven:319 },
+    { mod:'Galaxy S23',        cat:'Schermo',   desc:'Display Dynamic AMOLED',      pac:169, pven:269 },
+    { mod:'Galaxy S22 Ultra',  cat:'Schermo',   desc:'Display Dynamic AMOLED',      pac:209, pven:329 },
+    { mod:'Galaxy S22',        cat:'Schermo',   desc:'Display Dynamic AMOLED',      pac:149, pven:239 },
+    { mod:'Galaxy A55',        cat:'Schermo',   desc:'Display Super AMOLED',        pac:109, pven:169 },
+    { mod:'Galaxy A54',        cat:'Schermo',   desc:'Display Super AMOLED',        pac:99,  pven:155 },
+    { mod:'Galaxy A35',        cat:'Schermo',   desc:'Display Super AMOLED',        pac:89,  pven:139 },
+    { mod:'Galaxy A34',        cat:'Schermo',   desc:'Display Super AMOLED',        pac:79,  pven:124 },
+    { mod:'Galaxy A25',        cat:'Schermo',   desc:'Display Super AMOLED',        pac:69,  pven:109 },
+    { mod:'Galaxy A15',        cat:'Schermo',   desc:'Display LCD',                 pac:49,  pven:79  },
+    { mod:'Galaxy Z Fold6',    cat:'Schermo',   desc:'Display interno pieghevole',  pac:449, pven:699 },
+    { mod:'Galaxy Z Flip6',    cat:'Schermo',   desc:'Display interno pieghevole',  pac:299, pven:469 },
+    { mod:'Galaxy Z Fold5',    cat:'Schermo',   desc:'Display interno pieghevole',  pac:399, pven:619 },
+    { mod:'Galaxy Z Flip5',    cat:'Schermo',   desc:'Display interno pieghevole',  pac:269, pven:419 },
+    { mod:'Galaxy S24 Ultra',  cat:'Batteria',  desc:'Batteria originale Samsung',  pac:59,  pven:89  },
+    { mod:'Galaxy S24',        cat:'Batteria',  desc:'Batteria originale Samsung',  pac:49,  pven:75  },
+    { mod:'Galaxy S23 Ultra',  cat:'Batteria',  desc:'Batteria originale Samsung',  pac:55,  pven:85  },
+    { mod:'Galaxy S23',        cat:'Batteria',  desc:'Batteria originale Samsung',  pac:45,  pven:69  },
+    { mod:'Galaxy A55',        cat:'Batteria',  desc:'Batteria originale Samsung',  pac:35,  pven:55  },
+    { mod:'Galaxy A54',        cat:'Batteria',  desc:'Batteria originale Samsung',  pac:32,  pven:49  },
+    { mod:'Galaxy A34',        cat:'Batteria',  desc:'Batteria originale Samsung',  pac:29,  pven:45  }
+  ],
+  xiaomi: [
+    { mod:'Xiaomi 14 Ultra',     cat:'Schermo',  desc:'Display AMOLED LTPO',  pac:219, pven:339 },
+    { mod:'Xiaomi 14 Pro',       cat:'Schermo',  desc:'Display AMOLED LTPO',  pac:189, pven:299 },
+    { mod:'Xiaomi 14',           cat:'Schermo',  desc:'Display AMOLED',       pac:159, pven:249 },
+    { mod:'Redmi Note 13 Pro+',  cat:'Schermo',  desc:'Display AMOLED',       pac:99,  pven:155 },
+    { mod:'Redmi Note 13 Pro',   cat:'Schermo',  desc:'Display AMOLED',       pac:79,  pven:124 },
+    { mod:'Redmi Note 13',       cat:'Schermo',  desc:'Display AMOLED',       pac:59,  pven:93  },
+    { mod:'Redmi 13C',           cat:'Schermo',  desc:'Display LCD',          pac:39,  pven:62  },
+    { mod:'Xiaomi 14',           cat:'Batteria', desc:'Batteria originale',   pac:45,  pven:69  },
+    { mod:'Redmi Note 13',       cat:'Batteria', desc:'Batteria originale',   pac:29,  pven:45  }
+  ],
+  huawei: [
+    { mod:'Huawei P60 Pro',    cat:'Schermo',  desc:'Display OLED',         pac:189, pven:299 },
+    { mod:'Huawei P50 Pro',    cat:'Schermo',  desc:'Display OLED',         pac:159, pven:249 },
+    { mod:'Huawei Mate 60 Pro',cat:'Schermo',  desc:'Display OLED',         pac:219, pven:339 },
+    { mod:'Huawei Nova 11',    cat:'Schermo',  desc:'Display OLED',         pac:99,  pven:155 },
+    { mod:'Huawei P60 Pro',    cat:'Batteria', desc:'Batteria originale',   pac:49,  pven:75  },
+    { mod:'Huawei P50 Pro',    cat:'Batteria', desc:'Batteria originale',   pac:42,  pven:65  }
+  ]
+};
+
+function apriListino() { renderListino(); apriM('modal-listino'); }
+
+function renderListino() {
+  var brand = document.getElementById('lst-brand').value;
+  var cat   = document.getElementById('lst-cat').value;
+  var q     = document.getElementById('lst-search').value.toLowerCase().trim();
+  var data  = LISTINO[brand] || [];
+  var filtered = data.filter(function(x) {
+    if (cat && x.cat !== cat) return false;
+    if (q && x.mod.toLowerCase().indexOf(q)===-1 && x.desc.toLowerCase().indexOf(q)===-1) return false;
+    return true;
+  });
+  var html = '<table style="width:100%"><thead><tr><th>Modello</th><th>Cat.</th><th>Descrizione</th><th>P.Acq</th><th>P.Vend</th><th></th></tr></thead><tbody>';
+  if (!filtered.length) {
+    html += '<tr><td colspan="6" style="text-align:center;padding:32px;color:#555">Nessun risultato</td></tr>';
+  } else {
+    for (var i = 0; i < filtered.length; i++) {
+      var x = filtered[i];
+      var mp = Math.round(((x.pven-x.pac)/x.pven)*100);
+      html += '<tr>'
+        + '<td><b>' + x.mod + '</b></td>'
+        + '<td><span style="font-size:11px;background:#1a1a1a;padding:2px 7px;border-radius:10px">' + x.cat + '</span></td>'
+        + '<td style="font-size:12px;color:#888">' + x.desc + '</td>'
+        + '<td style="color:#ff8800;font-weight:700">EUR ' + x.pac.toFixed(2) + '</td>'
+        + '<td><b style="color:#40d080">EUR ' + x.pven.toFixed(2) + '</b><br><span style="font-size:10px;color:#555">+' + mp + '% marg.</span></td>'
+        + '<td><button class="btn btn-g btn-sm" style="border-color:#4080ff;color:#4080ff" data-brand="' + brand + '" data-idx="' + i + '" onclick="importaDaListino(+this.dataset.idx,this.dataset.brand)">+ Aggiungi</button></td>'
+        + '</tr>';
+    }
+  }
+  html += '</tbody></table>';
+  document.getElementById('lst-tb').innerHTML = html;
+}
+
+function importaDaListino(idx, brand) {
+  var cat = document.getElementById('lst-cat').value;
+  var q   = document.getElementById('lst-search').value.toLowerCase().trim();
+  var filtered = (LISTINO[brand]||[]).filter(function(x) {
+    if (cat && x.cat !== cat) return false;
+    if (q && x.mod.toLowerCase().indexOf(q)===-1 && x.desc.toLowerCase().indexOf(q)===-1) return false;
+    return true;
+  });
+  var x = filtered[idx];
+  if (!x) return;
+  var descFull = x.mod + ' - ' + x.desc;
+  var esi = ML.findIndex(function(m){ return m.desc.toLowerCase()===descFull.toLowerCase(); });
+  if (esi >= 0) {
+    if (!confirm('Articolo gia presente. Aggiornare i prezzi?')) return;
+    ML[esi].pac = x.pac; ML[esi].pven = x.pven;
+    salva(); renderMag(); showToast('Prezzi aggiornati', x.mod); return;
+  }
+  ML.push({
+    cod: brand.substring(0,3).toUpperCase()+'-'+x.mod.replace(/[^a-zA-Z0-9]/g,'').substring(0,8).toUpperCase(),
+    desc: descFull, cat: x.cat, qty: 0, min: 1, pac: x.pac, pven: x.pven
+  });
+  salva(); renderMag(); showToast('Aggiunto!', x.mod+' - '+x.cat);
+}
+
+// ============================================================
+// ORDINI CLIENTI
+// ============================================================
+var OL  = JSON.parse(localStorage.getItem('rp_ol')  || '[]');
+var OID = parseInt(localStorage.getItem('rp_oid') || '0');
+
+function apriNuovoOrdine() {
+  document.getElementById('nord-idx').value = '-1';
+  document.getElementById('nord-title').textContent = 'Nuovo Ordine Cliente';
+  ['nord-nome','nord-tel','nord-art','nord-note'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('nord-qty').value   = '1';
+  document.getElementById('nord-costo').value = '';
+  document.getElementById('nord-data').value  = '';
+  document.getElementById('nord-stato').value = 'In attesa';
+  apriM('modal-nord');
+}
+
+function apriModificaOrdine(id) {
+  var o = OL.find(function(x){ return x.id===id; });
+  if (!o) return;
+  document.getElementById('nord-idx').value   = id;
+  document.getElementById('nord-title').textContent = 'Modifica Ordine #O'+String(id).padStart(3,'0');
+  document.getElementById('nord-nome').value  = o.nome||'';
+  document.getElementById('nord-tel').value   = o.tel||'';
+  document.getElementById('nord-art').value   = o.art||'';
+  document.getElementById('nord-qty').value   = o.qty||1;
+  document.getElementById('nord-costo').value = o.costo||'';
+  document.getElementById('nord-data').value  = o.data||'';
+  document.getElementById('nord-note').value  = o.note||'';
+  document.getElementById('nord-stato').value = o.stato||'In attesa';
+  apriM('modal-nord');
+}
+
+function salvaOrdine() {
+  var nome = document.getElementById('nord-nome').value.trim();
+  var art  = document.getElementById('nord-art').value.trim();
+  if (!nome) { alert('Inserisci il nome del cliente'); return; }
+  if (!art)  { alert('Inserisci l articolo ordinato'); return; }
+  var idx   = document.getElementById('nord-idx').value;
+  var isNew = idx==='-1';
+  if (isNew) OID++;
+  var obj = {
+    id:    isNew ? OID : parseInt(idx),
+    nome:  nome,
+    tel:   document.getElementById('nord-tel').value.trim(),
+    art:   art,
+    qty:   parseInt(document.getElementById('nord-qty').value)||1,
+    costo: parseFloat(document.getElementById('nord-costo').value)||0,
+    data:  document.getElementById('nord-data').value,
+    note:  document.getElementById('nord-note').value.trim(),
+    stato: document.getElementById('nord-stato').value,
+    ts:    isNew ? Date.now() : (OL.find(function(x){return x.id===parseInt(idx);})||{}).ts||Date.now()
+  };
+  if (isNew) { OL.unshift(obj); }
+  else { var ii=OL.findIndex(function(x){return x.id===obj.id;}); if(ii>=0) OL[ii]=obj; }
+  localStorage.setItem('rp_ol',  JSON.stringify(OL));
+  localStorage.setItem('rp_oid', String(OID));
+  chiudiM('modal-nord'); renderOrdini(); aggiornaNotifOrdini();
+  showToast(isNew?'Ordine creato!':'Ordine aggiornato', nome+' - '+art);
+}
+
+function eliminaOrdine(id) {
+  if (!confirm('Eliminare questo ordine?')) return;
+  OL = OL.filter(function(x){ return x.id!==id; });
+  localStorage.setItem('rp_ol', JSON.stringify(OL));
+  renderOrdini(); aggiornaNotifOrdini();
+}
+
+function cambiaStatoOrdine(id, val) {
+  var o = OL.find(function(x){ return x.id===id; });
+  if (!o) return;
+  var old = o.stato; o.stato = val;
+  localStorage.setItem('rp_ol', JSON.stringify(OL));
+  if (val==='Arrivato' && old!=='Arrivato') showToast('Ordine arrivato!', o.art+' per '+o.nome);
+  renderOrdini(); aggiornaNotifOrdini();
+}
+
+function aggiornaNotifOrdini() {
+  var cnt = OL.filter(function(x){ return x.stato==='Arrivato'; }).length;
+  var el = document.getElementById('nb-ordini-cnt');
+  if (el) { el.textContent=cnt; el.style.display=cnt>0?'inline':'none'; }
+}
+
+function renderOrdini() {
+  var q     = (document.getElementById('ord-search')||{value:''}).value.toLowerCase().trim();
+  var stato = (document.getElementById('ord-filter-stato')||{value:''}).value;
+  var filtered = OL.filter(function(o) {
+    if (q && o.nome.toLowerCase().indexOf(q)===-1 && o.art.toLowerCase().indexOf(q)===-1) return false;
+    if (stato && o.stato!==stato) return false;
+    return true;
+  });
+  var arrivati = OL.filter(function(x){ return x.stato==='Arrivato'; });
+  var alertEl = document.getElementById('ord-alert');
+  if (alertEl) alertEl.innerHTML = arrivati.length ? '<div class="alert alert-w">&#128666; <b>'+arrivati.length+' ordine/i arrivato/i</b> da consegnare</div>' : '';
+  var infoEl = document.getElementById('ord-info');
+  if (infoEl) {
+    var inCorso = OL.filter(function(x){return x.stato==='In attesa'||x.stato==='Ordinato';}).length;
+    infoEl.innerHTML = OL.length+' ordini &nbsp;&bull;&nbsp; <b style="color:#4080ff">'+inCorso+' in corso</b> &nbsp;&bull;&nbsp; <b style="color:#40d080">'+arrivati.length+' arrivati</b>';
+  }
+  var tb = document.getElementById('ord-tb');
+  if (!tb) return;
+  if (!filtered.length) { tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:36px;color:#555">'+(OL.length?'Nessun risultato':'Nessun ordine')+'</td></tr>'; return; }
+  var stati = ['In attesa','Ordinato','Arrivato','Consegnato','Annullato'];
+  var sColor = {'In attesa':'#888','Ordinato':'#4080ff','Arrivato':'#40d080','Consegnato':'#555','Annullato':'#ff2200'};
+  var html='';
+  for (var i=0; i<filtered.length; i++) {
+    var o=filtered[i];
+    var dStr = o.data ? new Date(o.data).toLocaleDateString('it-IT') : '-';
+    var tStr = new Date(o.ts).toLocaleDateString('it-IT');
+    var opts = stati.map(function(s){return '<option'+(s===o.stato?' selected':'')+'>'+s+'</option>';}).join('');
+    html += '<tr>'
+      +'<td><code style="color:#4080ff">#O'+String(o.id).padStart(3,'0')+'</code></td>'
+      +'<td><b>'+o.nome+'</b>'+(o.tel?'<br><small style="color:#555">'+o.tel+'</small>':'')+'</td>'
+      +'<td><b>'+o.art+'</b>'+(o.note?'<br><small style="color:#666">'+o.note+'</small>':'')+'</td>'
+      +'<td style="text-align:center">'+o.qty+'</td>'
+      +'<td>'+(o.costo?'EUR '+o.costo.toFixed(2):'-')+'</td>'
+      +'<td>'+dStr+'<br><small style="color:#444">'+tStr+'</small></td>'
+      +'<td><select class="inp btn-sm" style="width:130px;color:'+(sColor[o.stato]||'#888')+'" onchange="cambiaStatoOrdine('+o.id+',this.value)">'+opts+'</select></td>'
+      +'<td style="white-space:nowrap">'
+        +'<button class="btn btn-g btn-sm" style="border-color:#ff8800;color:#ff8800;margin-right:3px" onclick="apriModificaOrdine('+o.id+')">Modif.</button>'
+        +'<button class="btn btn-d btn-sm" onclick="eliminaOrdine('+o.id+')">X</button>'
+      +'</td></tr>';
+  }
+  tb.innerHTML=html;
+}
+
+// ============================================================
+// STAMPA POS 80mm
+// ============================================================
+function stampaPOS() {
+  var r = RL.find(function(x){ return x.id===scedaAttivaId; });
+  if (!r) { alert('Apri prima la scheda di una riparazione.'); return; }
+  var costo = r.costo ? 'EUR '+parseFloat(r.costo).toFixed(2) : 'Da definire';
+  var data  = new Date().toLocaleDateString('it-IT');
+  var ora   = new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+  var css = '<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:"Courier New",Courier,monospace;font-size:12px;width:72mm;background:white;color:#000}@page{margin:3mm;size:80mm auto}.c{text-align:center}.b{font-weight:bold}.g{font-size:15px;font-weight:bold}.s{border-top:1px dashed #000;margin:4px 0}.s2{border-top:2px solid #000;margin:4px 0}.r{display:flex;justify-content:space-between;margin:2px 0}.lbl{color:#555;font-size:10px;text-transform:uppercase}.gc{font-size:20px;font-weight:900;text-align:center;margin:6px 0;letter-spacing:2px}</style>';
+  var h='';
+  h+='<div class="c g">'+SET.nome+'</div>';
+  if(SET.slogan) h+='<div class="c" style="font-size:10px">'+SET.slogan+'</div>';
+  if(SET.ind)    h+='<div class="c" style="font-size:10px">'+SET.ind+'</div>';
+  if(SET.tel)    h+='<div class="c" style="font-size:10px">Tel: '+SET.tel+'</div>';
+  h+='<div class="s2"></div>';
+  h+='<div class="r"><span class="b">SCHEDA #'+String(r.id).padStart(4,'0')+'</span><span>'+data+' '+ora+'</span></div>';
+  h+='<div class="s"></div>';
+  h+='<div class="lbl">Cliente</div><div class="b" style="font-size:13px">'+(r.nome||'-')+'</div>';
+  if(r.tel)   h+='<div>Tel: '+r.tel+'</div>';
+  if(r.email) h+='<div>'+r.email+'</div>';
+  h+='<div class="s"></div>';
+  h+='<div class="lbl">Dispositivo</div><div class="b">'+(r.device||'-')+'</div>';
+  if(r.imei) h+='<div style="font-size:10px">IMEI: '+r.imei+'</div>';
+  if(r.tipo) h+='<div>Intervento: '+r.tipo+'</div>';
+  h+='<div class="s"></div>';
+  h+='<div class="lbl">Problema</div><div style="font-size:11px;word-break:break-word">'+(r.problema||'-')+'</div>';
+  if(r.pin){ h+='<div class="s"></div><div class="lbl">PIN</div><div class="b" style="font-size:16px;letter-spacing:6px">'+r.pin+'</div>'; }
+  h+='<div class="s2"></div>';
+  h+='<div class="lbl c">Preventivo</div><div class="gc">'+costo+'</div>';
+  if(r.consegna)       h+='<div class="c" style="font-size:11px">Consegna prevista: '+r.consegna+'</div>';
+  if(r.dataConsegnato) h+='<div class="c b">Consegnato il: '+r.dataConsegnato+'</div>';
+  h+='<div class="s2"></div>';
+  if(r.note){ h+='<div class="lbl">Note</div><div style="font-size:11px;word-break:break-word">'+r.note+'</div><div class="s"></div>'; }
+  h+='<div style="font-size:9px;line-height:1.5">Garanzia 90gg stesso difetto. Non ritirati dopo 30gg: costi custodia.</div>';
+  h+='<div class="s"></div>';
+  h+='<div style="font-size:10px">Firma Cliente:<br><br><br></div>';
+  h+='<div style="border-top:1px solid #000;padding-top:4px;font-size:10px;margin-top:4px">Firma Tecnico:<br><br><br></div>';
+  h+='<div class="s"></div>';
+  h+='<div class="c" style="font-size:9px">'+SET.nome+(SET.piva?' - P.IVA '+SET.piva:'')+'</div>';
+  h+='<div class="c" style="font-size:9px">Grazie e arrivederci!</div><br><br>';
+  var win=window.open('','_blank','width=320,height=700');
+  if(!win){alert('Abilita i popup per stampare');return;}
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>POS</title>'+css+'</head><body>'+h);
+  win.document.write('<scri'+'pt>window.onload=function(){window.print();setTimeout(function(){window.close();},800);};<'+'/scri'+'pt>');
+  win.document.write('</body></html>');
+  win.document.close();
+}
+
 // ============================================================
 // AVVIO
 // ============================================================
 aggiornaSidebar();
 aggiornaLogo();
+aggiornaNotifOrdini();
 initGriglia('new');
 caricaEst('nr', '8');
 renderDash();
 renderNotif();
 
 </script>
+
+<!-- MODAL LISTINO UFFICIALE -->
+<div class="modal-bg" id="modal-listino">
+  <div class="modal" style="width:700px;max-height:90vh">
+    <div class="modal-hd">
+      <div class="modal-t">&#128176; Listino Prezzi Ufficiali</div>
+      <button class="modal-x" onclick="chiudiM('modal-listino')">x</button>
+    </div>
+    <div class="modal-b" style="padding:0">
+      <div style="padding:12px 16px;border-bottom:1px solid #1a1a1a;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select class="inp" id="lst-brand" style="width:130px" onchange="renderListino()">
+          <option value="apple">Apple</option><option value="samsung">Samsung</option>
+          <option value="xiaomi">Xiaomi</option><option value="huawei">Huawei</option>
+        </select>
+        <select class="inp" id="lst-cat" style="width:140px" onchange="renderListino()">
+          <option value="">Tutte le categorie</option>
+          <option>Schermo</option><option>Batteria</option><option>Connettore</option>
+          <option>Fotocamera</option><option>Scocca</option>
+        </select>
+        <input class="inp" id="lst-search" placeholder="Cerca modello..." style="flex:1;min-width:120px" oninput="renderListino()">
+        <div style="font-size:10px;color:#555;width:100%">&#9432; Prezzi indicativi di riferimento IVA inclusa. Listini ufficiali service autorizzati 2024-2025.</div>
+      </div>
+      <div id="lst-tb" style="overflow-y:auto;max-height:430px"></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-g" onclick="chiudiM('modal-listino')">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MODIFICA MAGAZZINO -->
+<div class="modal-bg" id="modal-em">
+  <div class="modal" style="width:500px">
+    <div class="modal-hd">
+      <div class="modal-t">Modifica Articolo</div>
+      <button class="modal-x" onclick="chiudiM('modal-em')">x</button>
+    </div>
+    <div class="modal-b">
+      <input type="hidden" id="em-idx">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label class="fl">Codice</label><input class="inp" id="em-cod"></div>
+        <div class="fg"><label class="fl">Categoria</label>
+          <select class="inp" id="em-cat">
+            <option>Schermo</option><option>Batteria</option><option>Connettore</option>
+            <option>Fotocamera</option><option>Scocca</option><option>Scheda madre</option><option>Altro</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg" style="margin-top:10px"><label class="fl">Descrizione *</label><input class="inp" id="em-desc"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+        <div class="fg"><label class="fl">Quantita</label><input class="inp" id="em-qty" type="number" min="0"></div>
+        <div class="fg"><label class="fl">Scorta minima</label><input class="inp" id="em-min" type="number" min="0"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+        <div class="fg"><label class="fl">P.Acquisto EUR</label><input class="inp" id="em-pac" type="number" step="0.01" min="0"></div>
+        <div class="fg"><label class="fl">P.Vendita EUR</label><input class="inp" id="em-pven" type="number" step="0.01" min="0"></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-g" onclick="chiudiM('modal-em')">Annulla</button>
+      <button class="btn btn-p" onclick="salvaModMag()">Salva Modifiche</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUOVO/MODIFICA ORDINE -->
+<div class="modal-bg" id="modal-nord">
+  <div class="modal" style="width:520px">
+    <div class="modal-hd">
+      <div class="modal-t" id="nord-title">Nuovo Ordine Cliente</div>
+      <button class="modal-x" onclick="chiudiM('modal-nord')">x</button>
+    </div>
+    <div class="modal-b">
+      <input type="hidden" id="nord-idx" value="-1">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label class="fl">Cliente *</label><input class="inp" id="nord-nome" placeholder="Nome cliente"></div>
+        <div class="fg"><label class="fl">Telefono</label><input class="inp" id="nord-tel" placeholder="3331234567"></div>
+      </div>
+      <div class="fg" style="margin-top:10px"><label class="fl">Articolo / Ricambio *</label><input class="inp" id="nord-art" placeholder="Es: Schermo iPhone 15 Pro originale"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px">
+        <div class="fg"><label class="fl">Quantita</label><input class="inp" id="nord-qty" type="number" min="1" value="1"></div>
+        <div class="fg"><label class="fl">Costo EUR</label><input class="inp" id="nord-costo" type="number" step="0.01" min="0" placeholder="0.00"></div>
+        <div class="fg"><label class="fl">Data prevista</label><input class="inp" id="nord-data" type="date"></div>
+      </div>
+      <div class="fg" style="margin-top:10px"><label class="fl">Note</label><textarea class="inp" id="nord-note" placeholder="Note aggiuntive..." style="min-height:60px"></textarea></div>
+      <div class="fg" style="margin-top:10px"><label class="fl">Stato</label>
+        <select class="inp" id="nord-stato">
+          <option>In attesa</option><option>Ordinato</option><option>Arrivato</option>
+          <option>Consegnato</option><option>Annullato</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-g" onclick="chiudiM('modal-nord')">Annulla</button>
+      <button class="btn btn-p" onclick="salvaOrdine()">Salva Ordine</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
