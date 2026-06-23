@@ -11,7 +11,7 @@ body { background: #0a0a0a; color: #f0f0f0; font-family: 'DM Sans', sans-serif; 
 .app { display: flex; min-height: 100vh; }
 
 /* SIDEBAR */
-.sidebar { width: 270px; background: #111; border-right: 1px solid #222; position: fixed; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; z-index: 50; }
+.sidebar { width: 258px; background: #111; border-right: 1px solid #222; position: fixed; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; z-index: 50; }
 .logo { padding: 18px 16px; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 10px; }
 .logo-icon { width: 38px; height: 38px; background: linear-gradient(135deg, #ff2200, #ff8800); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
 .logo-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: #ff5500; }
@@ -23,7 +23,7 @@ body { background: #0a0a0a; color: #f0f0f0; font-family: 'DM Sans', sans-serif; 
 .nav-btn.on { background: linear-gradient(90deg, #ff2200, #ff5500); color: #fff; font-weight: 600; }
 
 /* MAIN */
-.main { margin-left: 270px; flex: 1; padding: 28px 30px; }
+.main { margin-left: 258px; flex: 1; padding: 28px 30px; }
 .page-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; }
 .page-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; }
 .page-title small { font-size: 13px; color: #555; font-weight: 400; margin-left: 8px; }
@@ -142,9 +142,9 @@ textarea.inp { resize: vertical; min-height: 65px; }
   <nav class="nav">
     <button class="nav-btn on" id="nb-dashboard"    onclick="vai('dashboard',this)">&#128202; Dashboard</button>
     <button class="nav-btn"    id="nb-riparazioni"  onclick="vai('riparazioni',this)">&#128295; Riparazioni</button>
-    <button class="nav-btn"    id="nb-preventivi"   onclick="vai('preventivi',this)">&#129302; Assistente Preventivi</button>
     <button class="nav-btn"    id="nb-clienti"      onclick="vai('clienti',this)">&#128101; Clienti</button>
     <button class="nav-btn"    id="nb-magazzino"    onclick="vai('magazzino',this)">&#128230; Magazzino</button>
+    <button class="nav-btn"    id="nb-ordini"      onclick="vai('ordini',this)">&#128666; Ordini Clienti <span id="nb-ordini-cnt" style="background:#4080ff;color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 6px;margin-left:4px;display:none">0</span></button>
     <button class="nav-btn"    id="nb-fatture"      onclick="vai('fatture',this)">&#129534; Fatture</button>
     <button class="nav-btn"    id="nb-statistiche"  onclick="vai('statistiche',this)">&#128200; Statistiche</button>
     <button class="nav-btn"    id="nb-storico"      onclick="vai('storico',this)">&#128203; Storico</button>
@@ -198,44 +198,11 @@ textarea.inp { resize: vertical; min-height: 65px; }
   </div>
 </section>
 
-<!-- ASSISTENTE PREVENTIVI -->
-<section id="sec-preventivi" class="sec">
-  <div class="page-h">
-    <div class="page-title">Assistente Preventivi <small>Genera un preventivo dal listino in pochi secondi</small></div>
-  </div>
-
-  <div class="card" style="padding:18px 20px;margin-bottom:16px">
-    <div class="fg">
-      <label class="fl">Modello Dispositivo *</label>
-      <input class="inp" id="pv-device" placeholder="Es: iPhone 13, Galaxy A54, Redmi Note 12, Notebook HP 15.6...">
-    </div>
-    <div class="fg">
-      <label class="fl">Componenti / Problemi Riscontrati *</label>
-      <textarea class="inp" id="pv-problemi" placeholder="Scrivi anche in linguaggio naturale, una cosa per riga. Es:&#10;schermo rotto&#10;non si carica / batteria scarica&#10;non si accende"></textarea>
-    </div>
-    <button class="btn btn-p" onclick="generaPreventivo()">&#129302; Genera Preventivo</button>
-  </div>
-
-  <div id="pv-risultato"></div>
-</section>
-
 <!-- CLIENTI -->
 <section id="sec-clienti" class="sec">
   <div class="page-h">
     <div class="page-title">Clienti <small>Anagrafica</small></div>
-    <div style="display:flex;gap:8px">
-      <select class="inp" id="cl-cat" onchange="renderClienti()" style="width:170px">
-        <option value="">Tutte le categorie</option>
-        <option value="Smartphone">Smartphone</option>
-        <option value="PC">PC</option>
-        <option value="Notebook">Notebook</option>
-        <option value="Tablet">Tablet</option>
-        <option value="Console">Console</option>
-        <option value="Elettrodomestico">Elettrodomestico</option>
-        <option value="Altro">Altro</option>
-      </select>
-      <input class="inp" id="cl-q" placeholder="Cerca..." oninput="renderClienti()" style="width:230px">
-    </div>
+    <input class="inp" id="cl-q" placeholder="Cerca..." oninput="renderClienti()" style="width:230px">
   </div>
   <div class="card">
     <table><thead><tr><th>Cliente</th><th>Telefono</th><th>Email</th><th>Riparazioni</th><th>Ultima</th><th>Spesa EUR</th><th>Azioni</th></tr></thead>
@@ -247,58 +214,57 @@ textarea.inp { resize: vertical; min-height: 65px; }
 <section id="sec-magazzino" class="sec">
   <div class="page-h">
     <div class="page-title">Magazzino</div>
-    <button class="btn btn-p" id="mag-btn-add" onclick="mostraModaleM()">+ Aggiungi Pezzo</button>
-  </div>
-  <div class="card" style="padding:14px 18px;margin-bottom:14px">
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-      <input class="inp" id="mag-q" placeholder="&#128269; Cerca descrizione, codice o categoria..." oninput="renderMag()" style="flex:1;min-width:220px">
-      <select class="inp" id="mag-cat" onchange="renderMag()" style="width:170px">
-        <option value="">Tutte le categorie</option>
-      </select>
-      <select class="inp" id="mag-stato" onchange="renderMag()" style="width:130px">
-        <option value="">Tutti</option>
-        <option value="disp">Disponibili</option>
-        <option value="scorta">Sotto scorta</option>
-      </select>
-      <button class="btn btn-g" id="mag-btn-listino" onclick="apriListinoUfficiale()" style="border-color:#4080ff;color:#4080ff">&#129689; Listino Ufficiale</button>
-    </div>
-    <div id="mag-count" style="font-size:12px;color:#777;margin-top:10px;font-family:'DM Mono',monospace"></div>
+    <button class="btn btn-p" onclick="mostraModaleM()">+ Aggiungi Pezzo</button>
   </div>
   <div id="mag-alert"></div>
+  <div class="card" style="margin-bottom:12px">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <input class="inp" id="mag-search" placeholder="&#128269; Cerca descrizione, codice o categoria..." style="flex:1;min-width:200px" oninput="renderMag()">
+      <select class="inp" id="mag-filter-cat" style="width:155px" onchange="renderMag()">
+        <option value="">Tutte le categorie</option>
+        <option>Schermo</option><option>Batteria</option><option>Connettore</option>
+        <option>Fotocamera</option><option>Scocca</option><option>Scheda madre</option><option>Altro</option>
+      </select>
+      <select class="inp" id="mag-filter-disp" style="width:145px" onchange="renderMag()">
+        <option value="">Tutti</option>
+        <option value="disp">Disponibili</option>
+        <option value="esau">Esauriti</option>
+        <option value="bassa">Scorta bassa</option>
+      </select>
+      <button class="btn btn-g btn-sm" style="border-color:#4080ff;color:#4080ff;white-space:nowrap" onclick="apriListino()">&#128176; Listino Ufficiale</button>
+    </div>
+    <div id="mag-search-info" style="font-size:11px;color:#555;margin-top:8px;font-family:'DM Mono',monospace"></div>
+  </div>
   <div class="card">
     <table><thead><tr><th>Codice</th><th>Descrizione</th><th>Cat.</th><th>Qta</th><th>P.Acq EUR</th><th>P.Vend EUR</th><th>Azioni</th></tr></thead><tbody id="mag-tb"></tbody></table>
   </div>
 </section>
 
-<!-- LISTINO UFFICIALE (modal) -->
-<div class="modal-bg" id="modal-listino">
-  <div class="modal" style="width:920px;max-width:95vw">
-    <div class="modal-hd"><div class="modal-t">&#129689; Listino Ufficiale</div><button class="modal-x" onclick="chiudiM('modal-listino')">x</button></div>
-    <div class="modal-b">
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
-        <select class="inp" id="cat-brand" onchange="renderCatalogo()" style="width:150px">
-          <option value="">Tutte le marche</option>
-        </select>
-        <select class="inp" id="cat-cat" onchange="renderCatalogo()" style="width:145px">
-          <option value="">Tutte le categorie</option>
-        </select>
-        <select class="inp" id="cat-tipo" onchange="renderCatalogo()" style="width:140px">
-          <option value="">Tutti i tipi</option>
-          <option value="Originale">Originale</option>
-          <option value="Compatibile">Compatibile</option>
-        </select>
-        <input class="inp" id="cat-q" placeholder="Cerca modello..." oninput="renderCatalogo()" style="width:170px">
-        <span id="cat-count" style="font-size:11px;color:#555;font-family:'DM Mono',monospace;margin-left:auto"></span>
-      </div>
-      <div class="card" style="max-height:50vh;overflow:auto">
-        <table style="min-width:720px"><thead><tr><th>Marca</th><th>Modello / Descrizione</th><th>Cat.</th><th>Tipo</th><th>P.Acq EUR</th><th>P.Vend EUR</th><th>Azioni</th></tr></thead><tbody id="cat-tb"></tbody></table>
-      </div>
-    </div>
-    <div class="modal-ft">
-      <button class="btn btn-g" onclick="chiudiM('modal-listino')">Chiudi</button>
-    </div>
+<!-- ORDINI CLIENTI -->
+<section id="sec-ordini" class="sec">
+  <div class="page-h">
+    <div class="page-title">&#128666; Ordini Clienti</div>
+    <button class="btn btn-p" onclick="apriNuovoOrdine()">+ Nuovo Ordine</button>
   </div>
-</div>
+  <div id="ord-alert"></div>
+  <div class="card" style="margin-bottom:12px">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <input class="inp" id="ord-search" placeholder="&#128269; Cerca cliente o articolo..." style="flex:1;min-width:200px" oninput="renderOrdini()">
+      <select class="inp" id="ord-filter-stato" style="width:170px" onchange="renderOrdini()">
+        <option value="">Tutti gli stati</option>
+        <option value="In attesa">In attesa</option>
+        <option value="Ordinato">Ordinato</option>
+        <option value="Arrivato">Arrivato</option>
+        <option value="Consegnato">Consegnato</option>
+        <option value="Annullato">Annullato</option>
+      </select>
+    </div>
+    <div id="ord-info" style="font-size:11px;color:#555;margin-top:8px;font-family:'DM Mono',monospace"></div>
+  </div>
+  <div class="card">
+    <table><thead><tr><th>ID</th><th>Cliente</th><th>Articolo</th><th>Qta</th><th>Costo</th><th>Data</th><th>Stato</th><th>Azioni</th></tr></thead><tbody id="ord-tb"></tbody></table>
+  </div>
+</section>
 
 <!-- FATTURE -->
 <section id="sec-fatture" class="sec">
@@ -400,18 +366,6 @@ textarea.inp { resize: vertical; min-height: 65px; }
   <div class="modal" style="width:600px">
     <div class="modal-hd"><div class="modal-t">Nuova Scheda Riparazione</div><button class="modal-x" onclick="chiudiM('modal-r')">x</button></div>
     <div class="modal-b">
-      <div class="fg">
-        <label class="fl">Categoria Dispositivo *</label>
-        <select class="inp" id="nr-categoria">
-          <option value="Smartphone">Smartphone</option>
-          <option value="PC">PC</option>
-          <option value="Notebook">Notebook</option>
-          <option value="Tablet">Tablet</option>
-          <option value="Console">Console</option>
-          <option value="Elettrodomestico">Elettrodomestico</option>
-          <option value="Altro">Altro</option>
-        </select>
-      </div>
       <div class="fr2">
         <div class="fg"><label class="fl">Nome Cliente *</label><input class="inp" id="nr-nome" placeholder="Mario Rossi" autocomplete="off" oninput="acInput(this.value)" onkeydown="acKey(event)"><div id="ac-drop" style="display:none;position:absolute;background:#1a1a1a;border:1px solid #ff5500;border-radius:0 0 7px 7px;z-index:200;max-height:170px;overflow-y:auto;width:240px"></div></div>
         <div class="fg"><label class="fl">Telefono</label><input class="inp" id="nr-tel" placeholder="333 1234567"></div>
@@ -493,22 +447,7 @@ textarea.inp { resize: vertical; min-height: 65px; }
       </div>
       <div class="fg"><label class="fl">Problema Segnalato *</label><textarea class="inp" id="nr-problema" placeholder="Es: schermo rotto..."></textarea></div>
       <div class="fg"><label class="fl">Note Tecniche</label><textarea class="inp" id="nr-note" placeholder="Note interne..."></textarea></div>
-      <div class="fg" style="border-top:1px solid #2a2a2a;padding-top:12px;margin-top:4px">
-        <label class="fl">Ricambio da Magazzino (opzionale)</label>
-        <div class="fr3">
-          <div class="fg" style="margin-bottom:0">
-            <select class="inp" id="nr-ricambio" onchange="aggQtaMaxRicambio('nr')">
-              <option value="">-- Nessun ricambio --</option>
-            </select>
-          </div>
-          <div class="fg" style="margin-bottom:0">
-            <input class="inp" id="nr-ricambio-qty" type="number" min="1" value="1" placeholder="Quantita">
-          </div>
-          <div class="fg" style="margin-bottom:0;display:flex;align-items:center">
-            <span id="nr-ricambio-info" style="font-size:11px;color:#777;font-family:'DM Mono',monospace">Seleziona un articolo</span>
-          </div>
-        </div>
-      </div>
+      <div class="fg"><label class="fl">Stato Preventivo WhatsApp</label><select class="inp" id="nr-wa-stato"><option value="">— Nessuno —</option><option value="inviato">&#128228; Inviato</option><option value="accettato">&#9989; Accettato</option><option value="rifiutato">&#10060; Rifiutato</option></select></div>
     </div>
     <div class="modal-ft">
       <button class="btn btn-g" onclick="chiudiM('modal-r')">Annulla</button>
@@ -523,18 +462,6 @@ textarea.inp { resize: vertical; min-height: 65px; }
     <div class="modal-hd"><div class="modal-t">Modifica Riparazione</div><button class="modal-x" onclick="chiudiM('modal-e')">x</button></div>
     <div class="modal-b">
       <input type="hidden" id="e-id">
-      <div class="fg">
-        <label class="fl">Categoria Dispositivo *</label>
-        <select class="inp" id="e-categoria">
-          <option value="Smartphone">Smartphone</option>
-          <option value="PC">PC</option>
-          <option value="Notebook">Notebook</option>
-          <option value="Tablet">Tablet</option>
-          <option value="Console">Console</option>
-          <option value="Elettrodomestico">Elettrodomestico</option>
-          <option value="Altro">Altro</option>
-        </select>
-      </div>
       <div class="fr2">
         <div class="fg"><label class="fl">Nome Cliente *</label><input class="inp" id="e-nome"></div>
         <div class="fg"><label class="fl">Telefono</label><input class="inp" id="e-tel"></div>
@@ -616,24 +543,7 @@ textarea.inp { resize: vertical; min-height: 65px; }
       </div>
       <div class="fg"><label class="fl">Problema Segnalato *</label><textarea class="inp" id="e-problema"></textarea></div>
       <div class="fg"><label class="fl">Note Tecniche</label><textarea class="inp" id="e-note"></textarea></div>
-      <div class="fg" style="border-top:1px solid #2a2a2a;padding-top:12px;margin-top:4px">
-        <label class="fl">Ricambi Usati</label>
-        <div id="e-ricambi-usati" style="font-size:12px;color:#aaa;margin-bottom:8px">Nessun ricambio registrato</div>
-        <label class="fl">Aggiungi ricambio dal Magazzino (opzionale)</label>
-        <div class="fr3">
-          <div class="fg" style="margin-bottom:0">
-            <select class="inp" id="e-ricambio" onchange="aggQtaMaxRicambio('e')">
-              <option value="">-- Nessun ricambio --</option>
-            </select>
-          </div>
-          <div class="fg" style="margin-bottom:0">
-            <input class="inp" id="e-ricambio-qty" type="number" min="1" value="1" placeholder="Quantita">
-          </div>
-          <div class="fg" style="margin-bottom:0;display:flex;align-items:center">
-            <span id="e-ricambio-info" style="font-size:11px;color:#777;font-family:'DM Mono',monospace">Seleziona un articolo</span>
-          </div>
-        </div>
-      </div>
+      <div class="fg"><label class="fl">Stato Preventivo WhatsApp</label><select class="inp" id="e-wa-stato"><option value="">— Nessuno —</option><option value="inviato">&#128228; Inviato</option><option value="accettato">&#9989; Accettato</option><option value="rifiutato">&#10060; Rifiutato</option></select></div>
     </div>
     <div class="modal-ft">
       <button class="btn btn-g" onclick="chiudiM('modal-e')">Annulla</button>
@@ -649,7 +559,8 @@ textarea.inp { resize: vertical; min-height: 65px; }
     <div class="modal-b"><div id="scheda-body"></div></div>
     <div class="modal-ft">
       <button class="btn btn-g" onclick="chiudiM('modal-s')">Chiudi</button>
-      <button class="btn btn-p" onclick="stampaScheda()">Stampa</button>
+      <button class="btn btn-g" style="border-color:#40d080;color:#40d080" onclick="stampaPOS()">&#128438; POS 80mm</button>
+      <button class="btn btn-p" onclick="stampaScheda()">&#128438; Stampa A4</button>
     </div>
   </div>
 </div>
@@ -672,9 +583,8 @@ textarea.inp { resize: vertical; min-height: 65px; }
 <!-- MODAL MAGAZZINO -->
 <div class="modal-bg" id="modal-m">
   <div class="modal">
-    <div class="modal-hd"><div class="modal-t" id="modal-m-title">Aggiungi Pezzo</div><button class="modal-x" onclick="chiudiM('modal-m')">x</button></div>
+    <div class="modal-hd"><div class="modal-t">Aggiungi Pezzo</div><button class="modal-x" onclick="chiudiM('modal-m')">x</button></div>
     <div class="modal-b">
-      <input type="hidden" id="m-editidx" value="">
       <div class="fr2">
         <div class="fg"><label class="fl">Codice</label><input class="inp" id="m-cod" placeholder="SCH-IP14-001"></div>
         <div class="fg"><label class="fl">Categoria</label>
@@ -747,392 +657,6 @@ var RID = parseInt(localStorage.getItem('rp_rid') || '0');
 var FID = parseInt(localStorage.getItem('rp_fid') || '0');
 var SET = JSON.parse(localStorage.getItem('rp_set') || '{"nome":"RepairPro","slogan":"Centro Riparazioni","ind":"","tel":"","email":"","piva":""}');
 
-// ============================================================
-// CATALOGO RICAMBI - Database di riferimento (prezzi indicativi mercato IT/EU)
-// brand, model, cat (Schermo/Batteria/Connettore/Vetro Posteriore/Fotocamera/Altro), pac, pven
-// ============================================================
-var CATALOGO = [
-// ===== APPLE iPhone - Schermi =====
-{brand:'Apple',model:'Schermo iPhone 16 Pro Max',cat:'Schermo',tipo:'Originale',pac:140,pven:240},
-{brand:'Apple',model:'Schermo iPhone 16 Pro Max',cat:'Schermo',tipo:'Compatibile',pac:75,pven:149},
-{brand:'Apple',model:'Schermo iPhone 16 Pro',cat:'Schermo',tipo:'Originale',pac:120,pven:210},
-{brand:'Apple',model:'Schermo iPhone 16 Pro',cat:'Schermo',tipo:'Compatibile',pac:62,pven:129},
-{brand:'Apple',model:'Schermo iPhone 16 Plus',cat:'Schermo',tipo:'Originale',pac:95,pven:170},
-{brand:'Apple',model:'Schermo iPhone 16 Plus',cat:'Schermo',tipo:'Compatibile',pac:50,pven:105},
-{brand:'Apple',model:'Schermo iPhone 16',cat:'Schermo',tipo:'Originale',pac:85,pven:155},
-{brand:'Apple',model:'Schermo iPhone 16',cat:'Schermo',tipo:'Compatibile',pac:44,pven:95},
-{brand:'Apple',model:'Schermo iPhone 15 Pro Max',cat:'Schermo',tipo:'Originale',pac:130,pven:220},
-{brand:'Apple',model:'Schermo iPhone 15 Pro Max',cat:'Schermo',tipo:'Compatibile',pac:68,pven:135},
-{brand:'Apple',model:'Schermo iPhone 15 Pro',cat:'Schermo',tipo:'Originale',pac:110,pven:195},
-{brand:'Apple',model:'Schermo iPhone 15 Pro',cat:'Schermo',tipo:'Compatibile',pac:57,pven:119},
-{brand:'Apple',model:'Schermo iPhone 15 Plus',cat:'Schermo',tipo:'Originale',pac:85,pven:155},
-{brand:'Apple',model:'Schermo iPhone 15 Plus',cat:'Schermo',tipo:'Compatibile',pac:44,pven:95},
-{brand:'Apple',model:'Schermo iPhone 15',cat:'Schermo',tipo:'Originale',pac:75,pven:140},
-{brand:'Apple',model:'Schermo iPhone 15',cat:'Schermo',tipo:'Compatibile',pac:39,pven:85},
-{brand:'Apple',model:'Schermo iPhone 14 Pro Max',cat:'Schermo',tipo:'Originale',pac:110,pven:195},
-{brand:'Apple',model:'Schermo iPhone 14 Pro Max',cat:'Schermo',tipo:'Compatibile',pac:57,pven:119},
-{brand:'Apple',model:'Schermo iPhone 14 Pro',cat:'Schermo',tipo:'Originale',pac:95,pven:170},
-{brand:'Apple',model:'Schermo iPhone 14 Pro',cat:'Schermo',tipo:'Compatibile',pac:49,pven:105},
-{brand:'Apple',model:'Schermo iPhone 14 Plus',cat:'Schermo',tipo:'Originale',pac:75,pven:140},
-{brand:'Apple',model:'Schermo iPhone 14 Plus',cat:'Schermo',tipo:'Compatibile',pac:39,pven:85},
-{brand:'Apple',model:'Schermo iPhone 14',cat:'Schermo',tipo:'Originale',pac:60,pven:119},
-{brand:'Apple',model:'Schermo iPhone 14',cat:'Schermo',tipo:'Compatibile',pac:32,pven:72},
-{brand:'Apple',model:'Schermo iPhone 13 Pro Max',cat:'Schermo',tipo:'Originale',pac:90,pven:165},
-{brand:'Apple',model:'Schermo iPhone 13 Pro Max',cat:'Schermo',tipo:'Compatibile',pac:47,pven:99},
-{brand:'Apple',model:'Schermo iPhone 13 Pro',cat:'Schermo',tipo:'Originale',pac:75,pven:140},
-{brand:'Apple',model:'Schermo iPhone 13 Pro',cat:'Schermo',tipo:'Compatibile',pac:39,pven:85},
-{brand:'Apple',model:'Schermo iPhone 13',cat:'Schermo',tipo:'Originale',pac:45,pven:89},
-{brand:'Apple',model:'Schermo iPhone 13',cat:'Schermo',tipo:'Compatibile',pac:23,pven:52},
-{brand:'Apple',model:'Schermo iPhone 13 Mini',cat:'Schermo',tipo:'Originale',pac:48,pven:92},
-{brand:'Apple',model:'Schermo iPhone 13 Mini',cat:'Schermo',tipo:'Compatibile',pac:25,pven:55},
-{brand:'Apple',model:'Schermo iPhone 12 Pro Max',cat:'Schermo',tipo:'Originale',pac:70,pven:135},
-{brand:'Apple',model:'Schermo iPhone 12 Pro Max',cat:'Schermo',tipo:'Compatibile',pac:36,pven:79},
-{brand:'Apple',model:'Schermo iPhone 12 Pro',cat:'Schermo',tipo:'Originale',pac:55,pven:105},
-{brand:'Apple',model:'Schermo iPhone 12 Pro',cat:'Schermo',tipo:'Compatibile',pac:28,pven:62},
-{brand:'Apple',model:'Schermo iPhone 12',cat:'Schermo',tipo:'Originale',pac:38,pven:75},
-{brand:'Apple',model:'Schermo iPhone 12',cat:'Schermo',tipo:'Compatibile',pac:20,pven:45},
-{brand:'Apple',model:'Schermo iPhone 12 Mini',cat:'Schermo',tipo:'Originale',pac:40,pven:78},
-{brand:'Apple',model:'Schermo iPhone 12 Mini',cat:'Schermo',tipo:'Compatibile',pac:21,pven:48},
-{brand:'Apple',model:'Schermo iPhone 11 Pro Max',cat:'Schermo',tipo:'Originale',pac:55,pven:105},
-{brand:'Apple',model:'Schermo iPhone 11 Pro Max',cat:'Schermo',tipo:'Compatibile',pac:28,pven:62},
-{brand:'Apple',model:'Schermo iPhone 11 Pro',cat:'Schermo',tipo:'Originale',pac:48,pven:92},
-{brand:'Apple',model:'Schermo iPhone 11 Pro',cat:'Schermo',tipo:'Compatibile',pac:25,pven:55},
-{brand:'Apple',model:'Schermo iPhone 11',cat:'Schermo',tipo:'Originale',pac:28,pven:55},
-{brand:'Apple',model:'Schermo iPhone 11',cat:'Schermo',tipo:'Compatibile',pac:15,pven:32},
-{brand:'Apple',model:'Schermo iPhone XS Max',cat:'Schermo',tipo:'Originale',pac:45,pven:85},
-{brand:'Apple',model:'Schermo iPhone XS Max',cat:'Schermo',tipo:'Compatibile',pac:23,pven:49},
-{brand:'Apple',model:'Schermo iPhone XS',cat:'Schermo',tipo:'Originale',pac:38,pven:72},
-{brand:'Apple',model:'Schermo iPhone XS',cat:'Schermo',tipo:'Compatibile',pac:20,pven:42},
-{brand:'Apple',model:'Schermo iPhone XR',cat:'Schermo',tipo:'Originale',pac:25,pven:49},
-{brand:'Apple',model:'Schermo iPhone XR',cat:'Schermo',tipo:'Compatibile',pac:13,pven:29},
-{brand:'Apple',model:'Schermo iPhone X',cat:'Schermo',tipo:'Originale',pac:35,pven:68},
-{brand:'Apple',model:'Schermo iPhone X',cat:'Schermo',tipo:'Compatibile',pac:18,pven:39},
-{brand:'Apple',model:'Schermo iPhone SE 2022',cat:'Schermo',tipo:'Originale',pac:22,pven:45},
-{brand:'Apple',model:'Schermo iPhone SE 2022',cat:'Schermo',tipo:'Compatibile',pac:11,pven:26},
-{brand:'Apple',model:'Schermo iPhone 8 Plus',cat:'Schermo',tipo:'Originale',pac:18,pven:38},
-{brand:'Apple',model:'Schermo iPhone 8 Plus',cat:'Schermo',tipo:'Compatibile',pac:9,pven:22},
-{brand:'Apple',model:'Schermo iPhone 8',cat:'Schermo',tipo:'Originale',pac:15,pven:32},
-{brand:'Apple',model:'Schermo iPhone 8',cat:'Schermo',tipo:'Compatibile',pac:8,pven:19},
-{brand:'Apple',model:'Schermo iPhone 7 Plus',cat:'Schermo',tipo:'Originale',pac:16,pven:34},
-{brand:'Apple',model:'Schermo iPhone 7 Plus',cat:'Schermo',tipo:'Compatibile',pac:8,pven:20},
-{brand:'Apple',model:'Schermo iPhone 7',cat:'Schermo',tipo:'Originale',pac:13,pven:28},
-{brand:'Apple',model:'Schermo iPhone 7',cat:'Schermo',tipo:'Compatibile',pac:7,pven:16},
-// ===== APPLE iPhone - Batterie =====
-{brand:'Apple',model:'Batteria iPhone 16 Pro Max',cat:'Batteria',tipo:'Originale',pac:20,pven:42},
-{brand:'Apple',model:'Batteria iPhone 16 Pro Max',cat:'Batteria',tipo:'Compatibile',pac:10,pven:24},
-{brand:'Apple',model:'Batteria iPhone 16 Pro',cat:'Batteria',tipo:'Originale',pac:18,pven:38},
-{brand:'Apple',model:'Batteria iPhone 16 Pro',cat:'Batteria',tipo:'Compatibile',pac:9,pven:22},
-{brand:'Apple',model:'Batteria iPhone 16',cat:'Batteria',tipo:'Originale',pac:16,pven:35},
-{brand:'Apple',model:'Batteria iPhone 16',cat:'Batteria',tipo:'Compatibile',pac:8,pven:20},
-{brand:'Apple',model:'Batteria iPhone 15 Pro Max',cat:'Batteria',tipo:'Originale',pac:18,pven:39},
-{brand:'Apple',model:'Batteria iPhone 15 Pro Max',cat:'Batteria',tipo:'Compatibile',pac:9,pven:22},
-{brand:'Apple',model:'Batteria iPhone 15 Pro',cat:'Batteria',tipo:'Originale',pac:17,pven:37},
-{brand:'Apple',model:'Batteria iPhone 15 Pro',cat:'Batteria',tipo:'Compatibile',pac:9,pven:21},
-{brand:'Apple',model:'Batteria iPhone 15',cat:'Batteria',tipo:'Originale',pac:16,pven:35},
-{brand:'Apple',model:'Batteria iPhone 15',cat:'Batteria',tipo:'Compatibile',pac:8,pven:20},
-{brand:'Apple',model:'Batteria iPhone 14 Pro Max',cat:'Batteria',tipo:'Originale',pac:17,pven:36},
-{brand:'Apple',model:'Batteria iPhone 14 Pro Max',cat:'Batteria',tipo:'Compatibile',pac:9,pven:21},
-{brand:'Apple',model:'Batteria iPhone 14 Pro',cat:'Batteria',tipo:'Originale',pac:16,pven:34},
-{brand:'Apple',model:'Batteria iPhone 14 Pro',cat:'Batteria',tipo:'Compatibile',pac:8,pven:20},
-{brand:'Apple',model:'Batteria iPhone 14',cat:'Batteria',tipo:'Originale',pac:14,pven:32},
-{brand:'Apple',model:'Batteria iPhone 14',cat:'Batteria',tipo:'Compatibile',pac:7,pven:18},
-{brand:'Apple',model:'Batteria iPhone 13 Pro Max',cat:'Batteria',tipo:'Originale',pac:15,pven:33},
-{brand:'Apple',model:'Batteria iPhone 13 Pro Max',cat:'Batteria',tipo:'Compatibile',pac:8,pven:19},
-{brand:'Apple',model:'Batteria iPhone 13',cat:'Batteria',tipo:'Originale',pac:12,pven:29},
-{brand:'Apple',model:'Batteria iPhone 13',cat:'Batteria',tipo:'Compatibile',pac:6,pven:16},
-{brand:'Apple',model:'Batteria iPhone 12 Pro Max',cat:'Batteria',tipo:'Originale',pac:13,pven:30},
-{brand:'Apple',model:'Batteria iPhone 12 Pro Max',cat:'Batteria',tipo:'Compatibile',pac:7,pven:17},
-{brand:'Apple',model:'Batteria iPhone 12',cat:'Batteria',tipo:'Originale',pac:11,pven:27},
-{brand:'Apple',model:'Batteria iPhone 12',cat:'Batteria',tipo:'Compatibile',pac:6,pven:15},
-{brand:'Apple',model:'Batteria iPhone 11 Pro Max',cat:'Batteria',tipo:'Originale',pac:12,pven:28},
-{brand:'Apple',model:'Batteria iPhone 11 Pro Max',cat:'Batteria',tipo:'Compatibile',pac:6,pven:16},
-{brand:'Apple',model:'Batteria iPhone 11',cat:'Batteria',tipo:'Originale',pac:10,pven:24},
-{brand:'Apple',model:'Batteria iPhone 11',cat:'Batteria',tipo:'Compatibile',pac:5,pven:14},
-{brand:'Apple',model:'Batteria iPhone XS Max',cat:'Batteria',tipo:'Originale',pac:11,pven:26},
-{brand:'Apple',model:'Batteria iPhone XS Max',cat:'Batteria',tipo:'Compatibile',pac:6,pven:15},
-{brand:'Apple',model:'Batteria iPhone XR',cat:'Batteria',tipo:'Originale',pac:9,pven:22},
-{brand:'Apple',model:'Batteria iPhone XR',cat:'Batteria',tipo:'Compatibile',pac:5,pven:13},
-{brand:'Apple',model:'Batteria iPhone X',cat:'Batteria',tipo:'Originale',pac:9,pven:22},
-{brand:'Apple',model:'Batteria iPhone X',cat:'Batteria',tipo:'Compatibile',pac:5,pven:13},
-{brand:'Apple',model:'Batteria iPhone SE 2022',cat:'Batteria',tipo:'Originale',pac:8,pven:20},
-{brand:'Apple',model:'Batteria iPhone SE 2022',cat:'Batteria',tipo:'Compatibile',pac:4,pven:12},
-{brand:'Apple',model:'Batteria iPhone 8',cat:'Batteria',tipo:'Originale',pac:7,pven:18},
-{brand:'Apple',model:'Batteria iPhone 8',cat:'Batteria',tipo:'Compatibile',pac:4,pven:11},
-{brand:'Apple',model:'Batteria iPhone 7',cat:'Batteria',tipo:'Originale',pac:7,pven:17},
-{brand:'Apple',model:'Batteria iPhone 7',cat:'Batteria',tipo:'Compatibile',pac:4,pven:10},
-// ===== APPLE - Vetro Posteriore / Connettori / Fotocamere =====
-{brand:'Apple',model:'Vetro Posteriore iPhone 15 Pro',cat:'Vetro Posteriore',tipo:'Originale',pac:25,pven:55},
-{brand:'Apple',model:'Vetro Posteriore iPhone 15 Pro',cat:'Vetro Posteriore',tipo:'Compatibile',pac:12,pven:30},
-{brand:'Apple',model:'Vetro Posteriore iPhone 14 Pro',cat:'Vetro Posteriore',tipo:'Originale',pac:22,pven:48},
-{brand:'Apple',model:'Vetro Posteriore iPhone 14 Pro',cat:'Vetro Posteriore',tipo:'Compatibile',pac:11,pven:26},
-{brand:'Apple',model:'Vetro Posteriore iPhone 13',cat:'Vetro Posteriore',tipo:'Originale',pac:18,pven:42},
-{brand:'Apple',model:'Vetro Posteriore iPhone 13',cat:'Vetro Posteriore',tipo:'Compatibile',pac:9,pven:24},
-{brand:'Apple',model:'Vetro Posteriore iPhone 12',cat:'Vetro Posteriore',tipo:'Originale',pac:16,pven:38},
-{brand:'Apple',model:'Vetro Posteriore iPhone 12',cat:'Vetro Posteriore',tipo:'Compatibile',pac:8,pven:22},
-{brand:'Apple',model:'Connettore Lightning iPhone 13/14',cat:'Connettore',tipo:'Originale',pac:9,pven:24},
-{brand:'Apple',model:'Connettore Lightning iPhone 13/14',cat:'Connettore',tipo:'Compatibile',pac:5,pven:14},
-{brand:'Apple',model:'Connettore USB-C iPhone 15/16',cat:'Connettore',tipo:'Originale',pac:10,pven:26},
-{brand:'Apple',model:'Connettore USB-C iPhone 15/16',cat:'Connettore',tipo:'Compatibile',pac:5,pven:15},
-{brand:'Apple',model:'Fotocamera Posteriore iPhone 14 Pro',cat:'Fotocamera',tipo:'Originale',pac:35,pven:75},
-{brand:'Apple',model:'Fotocamera Posteriore iPhone 14 Pro',cat:'Fotocamera',tipo:'Compatibile',pac:18,pven:42},
-{brand:'Apple',model:'Fotocamera Posteriore iPhone 13',cat:'Fotocamera',tipo:'Originale',pac:28,pven:62},
-{brand:'Apple',model:'Fotocamera Posteriore iPhone 13',cat:'Fotocamera',tipo:'Compatibile',pac:14,pven:35},
-{brand:'Apple',model:'Fotocamera Frontale iPhone 13/14',cat:'Fotocamera',tipo:'Originale',pac:18,pven:42},
-{brand:'Apple',model:'Fotocamera Frontale iPhone 13/14',cat:'Fotocamera',tipo:'Compatibile',pac:9,pven:24},
-// ===== APPLE iPad =====
-{brand:'Apple',model:'Schermo iPad Pro 12.9" (2021-2022)',cat:'Schermo',tipo:'Originale',pac:160,pven:280},
-{brand:'Apple',model:'Schermo iPad Pro 12.9" (2021-2022)',cat:'Schermo',tipo:'Compatibile',pac:82,pven:165},
-{brand:'Apple',model:'Schermo iPad Pro 11"',cat:'Schermo',tipo:'Originale',pac:120,pven:210},
-{brand:'Apple',model:'Schermo iPad Pro 11"',cat:'Schermo',tipo:'Compatibile',pac:62,pven:125},
-{brand:'Apple',model:'Schermo iPad Air 5',cat:'Schermo',tipo:'Originale',pac:75,pven:140},
-{brand:'Apple',model:'Schermo iPad Air 5',cat:'Schermo',tipo:'Compatibile',pac:39,pven:82},
-{brand:'Apple',model:'Schermo iPad 10 (2022)',cat:'Schermo',tipo:'Originale',pac:65,pven:120},
-{brand:'Apple',model:'Schermo iPad 10 (2022)',cat:'Schermo',tipo:'Compatibile',pac:33,pven:70},
-{brand:'Apple',model:'Schermo iPad 9 (2021)',cat:'Schermo',tipo:'Originale',pac:48,pven:92},
-{brand:'Apple',model:'Schermo iPad 9 (2021)',cat:'Schermo',tipo:'Compatibile',pac:25,pven:54},
-{brand:'Apple',model:'Schermo iPad Mini 6',cat:'Schermo',tipo:'Originale',pac:70,pven:130},
-{brand:'Apple',model:'Schermo iPad Mini 6',cat:'Schermo',tipo:'Compatibile',pac:36,pven:76},
-{brand:'Apple',model:'Batteria iPad 9/10',cat:'Batteria',tipo:'Originale',pac:22,pven:48},
-{brand:'Apple',model:'Batteria iPad 9/10',cat:'Batteria',tipo:'Compatibile',pac:11,pven:28},
-{brand:'Apple',model:'Batteria iPad Air 5',cat:'Batteria',tipo:'Originale',pac:28,pven:58},
-{brand:'Apple',model:'Batteria iPad Air 5',cat:'Batteria',tipo:'Compatibile',pac:14,pven:34},
-{brand:'Apple',model:'Connettore USB-C iPad Air/Pro',cat:'Connettore',tipo:'Originale',pac:14,pven:32},
-{brand:'Apple',model:'Connettore USB-C iPad Air/Pro',cat:'Connettore',tipo:'Compatibile',pac:7,pven:18},
-// ===== APPLE MacBook =====
-{brand:'Apple',model:'Batteria MacBook Air M1/M2',cat:'Batteria',tipo:'Originale',pac:55,pven:110},
-{brand:'Apple',model:'Batteria MacBook Air M1/M2',cat:'Batteria',tipo:'Compatibile',pac:28,pven:62},
-{brand:'Apple',model:'Batteria MacBook Pro 13" M1/M2',cat:'Batteria',tipo:'Originale',pac:60,pven:120},
-{brand:'Apple',model:'Batteria MacBook Pro 13" M1/M2',cat:'Batteria',tipo:'Compatibile',pac:31,pven:68},
-{brand:'Apple',model:'Batteria MacBook Pro 14"/16" M1 Pro/Max',cat:'Batteria',tipo:'Originale',pac:85,pven:160},
-{brand:'Apple',model:'Batteria MacBook Pro 14"/16" M1 Pro/Max',cat:'Batteria',tipo:'Compatibile',pac:44,pven:90},
-{brand:'Apple',model:'Schermo MacBook Air 13" M1/M2',cat:'Schermo',tipo:'Originale',pac:220,pven:380},
-{brand:'Apple',model:'Schermo MacBook Air 13" M1/M2',cat:'Schermo',tipo:'Compatibile',pac:110,pven:220},
-{brand:'Apple',model:'Schermo MacBook Pro 13" M1/M2',cat:'Schermo',tipo:'Originale',pac:230,pven:400},
-{brand:'Apple',model:'Schermo MacBook Pro 13" M1/M2',cat:'Schermo',tipo:'Compatibile',pac:115,pven:235},
-{brand:'Apple',model:'Schermo MacBook Pro 14" M1 Pro',cat:'Schermo',tipo:'Originale',pac:320,pven:550},
-{brand:'Apple',model:'Schermo MacBook Pro 14" M1 Pro',cat:'Schermo',tipo:'Compatibile',pac:160,pven:320},
-{brand:'Apple',model:'Tastiera MacBook Air/Pro 13"',cat:'Altro',tipo:'Originale',pac:70,pven:140},
-{brand:'Apple',model:'Tastiera MacBook Air/Pro 13"',cat:'Altro',tipo:'Compatibile',pac:35,pven:78},
-{brand:'Apple',model:'Trackpad MacBook Air/Pro',cat:'Altro',tipo:'Originale',pac:45,pven:90},
-{brand:'Apple',model:'Trackpad MacBook Air/Pro',cat:'Altro',tipo:'Compatibile',pac:22,pven:50},
-{brand:'Apple',model:'Caricabatteria USB-C 67W MacBook',cat:'Altro',tipo:'Originale',pac:35,pven:65},
-{brand:'Apple',model:'Caricabatteria USB-C 67W MacBook',cat:'Altro',tipo:'Compatibile',pac:16,pven:35},
-// ===== SAMSUNG Galaxy S/Note/Z =====
-{brand:'Samsung',model:'Schermo Galaxy S24 Ultra',cat:'Schermo',tipo:'Originale',pac:160,pven:280},
-{brand:'Samsung',model:'Schermo Galaxy S24 Ultra',cat:'Schermo',tipo:'Compatibile',pac:82,pven:165},
-{brand:'Samsung',model:'Schermo Galaxy S24+',cat:'Schermo',tipo:'Originale',pac:130,pven:230},
-{brand:'Samsung',model:'Schermo Galaxy S24+',cat:'Schermo',tipo:'Compatibile',pac:67,pven:135},
-{brand:'Samsung',model:'Schermo Galaxy S24',cat:'Schermo',tipo:'Originale',pac:95,pven:169},
-{brand:'Samsung',model:'Schermo Galaxy S24',cat:'Schermo',tipo:'Compatibile',pac:49,pven:99},
-{brand:'Samsung',model:'Schermo Galaxy S23 Ultra',cat:'Schermo',tipo:'Originale',pac:150,pven:260},
-{brand:'Samsung',model:'Schermo Galaxy S23 Ultra',cat:'Schermo',tipo:'Compatibile',pac:77,pven:155},
-{brand:'Samsung',model:'Schermo Galaxy S23+',cat:'Schermo',tipo:'Originale',pac:115,pven:205},
-{brand:'Samsung',model:'Schermo Galaxy S23+',cat:'Schermo',tipo:'Compatibile',pac:59,pven:120},
-{brand:'Samsung',model:'Schermo Galaxy S23',cat:'Schermo',tipo:'Originale',pac:85,pven:155},
-{brand:'Samsung',model:'Schermo Galaxy S23',cat:'Schermo',tipo:'Compatibile',pac:44,pven:90},
-{brand:'Samsung',model:'Schermo Galaxy S22 Ultra',cat:'Schermo',tipo:'Originale',pac:135,pven:235},
-{brand:'Samsung',model:'Schermo Galaxy S22 Ultra',cat:'Schermo',tipo:'Compatibile',pac:70,pven:139},
-{brand:'Samsung',model:'Schermo Galaxy S22+',cat:'Schermo',tipo:'Originale',pac:100,pven:180},
-{brand:'Samsung',model:'Schermo Galaxy S22+',cat:'Schermo',tipo:'Compatibile',pac:52,pven:105},
-{brand:'Samsung',model:'Schermo Galaxy S22',cat:'Schermo',tipo:'Originale',pac:75,pven:140},
-{brand:'Samsung',model:'Schermo Galaxy S22',cat:'Schermo',tipo:'Compatibile',pac:39,pven:82},
-{brand:'Samsung',model:'Schermo Galaxy S21 Ultra',cat:'Schermo',tipo:'Originale',pac:110,pven:195},
-{brand:'Samsung',model:'Schermo Galaxy S21 Ultra',cat:'Schermo',tipo:'Compatibile',pac:57,pven:115},
-{brand:'Samsung',model:'Schermo Galaxy S21',cat:'Schermo',tipo:'Originale',pac:65,pven:120},
-{brand:'Samsung',model:'Schermo Galaxy S21',cat:'Schermo',tipo:'Compatibile',pac:33,pven:70},
-{brand:'Samsung',model:'Schermo Galaxy S20 FE',cat:'Schermo',tipo:'Originale',pac:55,pven:105},
-{brand:'Samsung',model:'Schermo Galaxy S20 FE',cat:'Schermo',tipo:'Compatibile',pac:28,pven:62},
-{brand:'Samsung',model:'Schermo Galaxy Note 20 Ultra',cat:'Schermo',tipo:'Originale',pac:120,pven:210},
-{brand:'Samsung',model:'Schermo Galaxy Note 20 Ultra',cat:'Schermo',tipo:'Compatibile',pac:62,pven:125},
-{brand:'Samsung',model:'Schermo Galaxy Z Flip 5',cat:'Schermo',tipo:'Originale',pac:140,pven:250},
-{brand:'Samsung',model:'Schermo Galaxy Z Flip 5',cat:'Schermo',tipo:'Compatibile',pac:72,pven:149},
-{brand:'Samsung',model:'Schermo Galaxy Z Fold 5 (interno)',cat:'Schermo',tipo:'Originale',pac:280,pven:480},
-{brand:'Samsung',model:'Schermo Galaxy Z Fold 5 (interno)',cat:'Schermo',tipo:'Compatibile',pac:145,pven:285},
-// ===== SAMSUNG Galaxy A =====
-{brand:'Samsung',model:'Schermo Galaxy A55',cat:'Schermo',tipo:'Originale',pac:55,pven:105},
-{brand:'Samsung',model:'Schermo Galaxy A55',cat:'Schermo',tipo:'Compatibile',pac:28,pven:62},
-{brand:'Samsung',model:'Schermo Galaxy A54',cat:'Schermo',tipo:'Originale',pac:38,pven:72},
-{brand:'Samsung',model:'Schermo Galaxy A54',cat:'Schermo',tipo:'Compatibile',pac:20,pven:42},
-{brand:'Samsung',model:'Schermo Galaxy A53',cat:'Schermo',tipo:'Originale',pac:35,pven:68},
-{brand:'Samsung',model:'Schermo Galaxy A53',cat:'Schermo',tipo:'Compatibile',pac:18,pven:40},
-{brand:'Samsung',model:'Schermo Galaxy A52',cat:'Schermo',tipo:'Originale',pac:32,pven:62},
-{brand:'Samsung',model:'Schermo Galaxy A52',cat:'Schermo',tipo:'Compatibile',pac:16,pven:36},
-{brand:'Samsung',model:'Schermo Galaxy A35',cat:'Schermo',tipo:'Originale',pac:42,pven:80},
-{brand:'Samsung',model:'Schermo Galaxy A35',cat:'Schermo',tipo:'Compatibile',pac:22,pven:48},
-{brand:'Samsung',model:'Schermo Galaxy A34',cat:'Schermo',tipo:'Originale',pac:32,pven:62},
-{brand:'Samsung',model:'Schermo Galaxy A34',cat:'Schermo',tipo:'Compatibile',pac:16,pven:36},
-{brand:'Samsung',model:'Schermo Galaxy A33',cat:'Schermo',tipo:'Originale',pac:30,pven:58},
-{brand:'Samsung',model:'Schermo Galaxy A33',cat:'Schermo',tipo:'Compatibile',pac:15,pven:34},
-{brand:'Samsung',model:'Schermo Galaxy A25',cat:'Schermo',tipo:'Originale',pac:35,pven:68},
-{brand:'Samsung',model:'Schermo Galaxy A25',cat:'Schermo',tipo:'Compatibile',pac:18,pven:40},
-{brand:'Samsung',model:'Schermo Galaxy A24',cat:'Schermo',tipo:'Originale',pac:28,pven:55},
-{brand:'Samsung',model:'Schermo Galaxy A24',cat:'Schermo',tipo:'Compatibile',pac:14,pven:32},
-{brand:'Samsung',model:'Schermo Galaxy A23',cat:'Schermo',tipo:'Originale',pac:25,pven:50},
-{brand:'Samsung',model:'Schermo Galaxy A23',cat:'Schermo',tipo:'Compatibile',pac:13,pven:29},
-{brand:'Samsung',model:'Schermo Galaxy A15',cat:'Schermo',tipo:'Originale',pac:24,pven:48},
-{brand:'Samsung',model:'Schermo Galaxy A15',cat:'Schermo',tipo:'Compatibile',pac:12,pven:28},
-{brand:'Samsung',model:'Schermo Galaxy A14',cat:'Schermo',tipo:'Originale',pac:22,pven:45},
-{brand:'Samsung',model:'Schermo Galaxy A14',cat:'Schermo',tipo:'Compatibile',pac:11,pven:26},
-{brand:'Samsung',model:'Schermo Galaxy A13',cat:'Schermo',tipo:'Originale',pac:20,pven:42},
-{brand:'Samsung',model:'Schermo Galaxy A13',cat:'Schermo',tipo:'Compatibile',pac:10,pven:24},
-{brand:'Samsung',model:'Schermo Galaxy A12',cat:'Schermo',tipo:'Originale',pac:18,pven:38},
-{brand:'Samsung',model:'Schermo Galaxy A12',cat:'Schermo',tipo:'Compatibile',pac:9,pven:22},
-// ===== SAMSUNG Batterie =====
-{brand:'Samsung',model:'Batteria Galaxy S24/S23',cat:'Batteria',tipo:'Originale',pac:14,pven:32},
-{brand:'Samsung',model:'Batteria Galaxy S24/S23',cat:'Batteria',tipo:'Compatibile',pac:7,pven:18},
-{brand:'Samsung',model:'Batteria Galaxy S22/S21',cat:'Batteria',tipo:'Originale',pac:13,pven:30},
-{brand:'Samsung',model:'Batteria Galaxy S22/S21',cat:'Batteria',tipo:'Compatibile',pac:7,pven:17},
-{brand:'Samsung',model:'Batteria Galaxy S20',cat:'Batteria',tipo:'Originale',pac:12,pven:28},
-{brand:'Samsung',model:'Batteria Galaxy S20',cat:'Batteria',tipo:'Compatibile',pac:6,pven:16},
-{brand:'Samsung',model:'Batteria Galaxy A54/A55',cat:'Batteria',tipo:'Originale',pac:12,pven:28},
-{brand:'Samsung',model:'Batteria Galaxy A54/A55',cat:'Batteria',tipo:'Compatibile',pac:6,pven:16},
-{brand:'Samsung',model:'Batteria Galaxy A34/A35',cat:'Batteria',tipo:'Originale',pac:11,pven:26},
-{brand:'Samsung',model:'Batteria Galaxy A34/A35',cat:'Batteria',tipo:'Compatibile',pac:6,pven:15},
-{brand:'Samsung',model:'Batteria Galaxy A14/A24/A25',cat:'Batteria',tipo:'Originale',pac:10,pven:24},
-{brand:'Samsung',model:'Batteria Galaxy A14/A24/A25',cat:'Batteria',tipo:'Compatibile',pac:5,pven:14},
-{brand:'Samsung',model:'Batteria Galaxy A12/A13',cat:'Batteria',tipo:'Originale',pac:9,pven:22},
-{brand:'Samsung',model:'Batteria Galaxy A12/A13',cat:'Batteria',tipo:'Compatibile',pac:5,pven:13},
-// ===== SAMSUNG Connettori/Altro =====
-{brand:'Samsung',model:'Connettore USB-C Galaxy S serie',cat:'Connettore',tipo:'Originale',pac:7,pven:16},
-{brand:'Samsung',model:'Connettore USB-C Galaxy S serie',cat:'Connettore',tipo:'Compatibile',pac:4,pven:10},
-{brand:'Samsung',model:'Connettore USB-C Galaxy A serie',cat:'Connettore',tipo:'Originale',pac:6,pven:14},
-{brand:'Samsung',model:'Connettore USB-C Galaxy A serie',cat:'Connettore',tipo:'Compatibile',pac:3,pven:8},
-{brand:'Samsung',model:'Vetro Posteriore Galaxy S24',cat:'Vetro Posteriore',tipo:'Originale',pac:20,pven:48},
-{brand:'Samsung',model:'Vetro Posteriore Galaxy S24',cat:'Vetro Posteriore',tipo:'Compatibile',pac:10,pven:28},
-{brand:'Samsung',model:'Vetro Posteriore Galaxy A54',cat:'Vetro Posteriore',tipo:'Originale',pac:14,pven:32},
-{brand:'Samsung',model:'Vetro Posteriore Galaxy A54',cat:'Vetro Posteriore',tipo:'Compatibile',pac:7,pven:19},
-// ===== XIAOMI / REDMI / POCO =====
-{brand:'Xiaomi',model:'Schermo Xiaomi 14',cat:'Schermo',tipo:'Originale',pac:90,pven:165},
-{brand:'Xiaomi',model:'Schermo Xiaomi 14',cat:'Schermo',tipo:'Compatibile',pac:46,pven:98},
-{brand:'Xiaomi',model:'Schermo Xiaomi 13',cat:'Schermo',tipo:'Originale',pac:80,pven:145},
-{brand:'Xiaomi',model:'Schermo Xiaomi 13',cat:'Schermo',tipo:'Compatibile',pac:41,pven:86},
-{brand:'Xiaomi',model:'Schermo Xiaomi 12',cat:'Schermo',tipo:'Originale',pac:65,pven:120},
-{brand:'Xiaomi',model:'Schermo Xiaomi 12',cat:'Schermo',tipo:'Compatibile',pac:33,pven:70},
-{brand:'Xiaomi',model:'Schermo Xiaomi 11',cat:'Schermo',tipo:'Originale',pac:55,pven:105},
-{brand:'Xiaomi',model:'Schermo Xiaomi 11',cat:'Schermo',tipo:'Compatibile',pac:28,pven:62},
-{brand:'Xiaomi',model:'Schermo Redmi Note 13 Pro',cat:'Schermo',tipo:'Originale',pac:40,pven:78},
-{brand:'Xiaomi',model:'Schermo Redmi Note 13 Pro',cat:'Schermo',tipo:'Compatibile',pac:21,pven:46},
-{brand:'Xiaomi',model:'Schermo Redmi Note 13',cat:'Schermo',tipo:'Originale',pac:30,pven:58},
-{brand:'Xiaomi',model:'Schermo Redmi Note 13',cat:'Schermo',tipo:'Compatibile',pac:15,pven:34},
-{brand:'Xiaomi',model:'Schermo Redmi Note 12 Pro',cat:'Schermo',tipo:'Originale',pac:35,pven:68},
-{brand:'Xiaomi',model:'Schermo Redmi Note 12 Pro',cat:'Schermo',tipo:'Compatibile',pac:18,pven:40},
-{brand:'Xiaomi',model:'Schermo Redmi Note 12',cat:'Schermo',tipo:'Originale',pac:26,pven:52},
-{brand:'Xiaomi',model:'Schermo Redmi Note 12',cat:'Schermo',tipo:'Compatibile',pac:13,pven:30},
-{brand:'Xiaomi',model:'Schermo Redmi Note 11 Pro',cat:'Schermo',tipo:'Originale',pac:30,pven:60},
-{brand:'Xiaomi',model:'Schermo Redmi Note 11 Pro',cat:'Schermo',tipo:'Compatibile',pac:15,pven:35},
-{brand:'Xiaomi',model:'Schermo Redmi Note 11',cat:'Schermo',tipo:'Originale',pac:24,pven:48},
-{brand:'Xiaomi',model:'Schermo Redmi Note 11',cat:'Schermo',tipo:'Compatibile',pac:12,pven:28},
-{brand:'Xiaomi',model:'Schermo Redmi Note 10',cat:'Schermo',tipo:'Originale',pac:22,pven:44},
-{brand:'Xiaomi',model:'Schermo Redmi Note 10',cat:'Schermo',tipo:'Compatibile',pac:11,pven:26},
-{brand:'Xiaomi',model:'Schermo Redmi 13C',cat:'Schermo',tipo:'Originale',pac:18,pven:38},
-{brand:'Xiaomi',model:'Schermo Redmi 13C',cat:'Schermo',tipo:'Compatibile',pac:9,pven:22},
-{brand:'Xiaomi',model:'Schermo Redmi 12',cat:'Schermo',tipo:'Originale',pac:18,pven:38},
-{brand:'Xiaomi',model:'Schermo Redmi 12',cat:'Schermo',tipo:'Compatibile',pac:9,pven:22},
-{brand:'Xiaomi',model:'Schermo Redmi 10',cat:'Schermo',tipo:'Originale',pac:16,pven:34},
-{brand:'Xiaomi',model:'Schermo Redmi 10',cat:'Schermo',tipo:'Compatibile',pac:8,pven:20},
-{brand:'Xiaomi',model:'Schermo Poco X6',cat:'Schermo',tipo:'Originale',pac:32,pven:62},
-{brand:'Xiaomi',model:'Schermo Poco X6',cat:'Schermo',tipo:'Compatibile',pac:16,pven:36},
-{brand:'Xiaomi',model:'Schermo Poco F5',cat:'Schermo',tipo:'Originale',pac:45,pven:85},
-{brand:'Xiaomi',model:'Schermo Poco F5',cat:'Schermo',tipo:'Compatibile',pac:23,pven:50},
-{brand:'Xiaomi',model:'Schermo Poco M6',cat:'Schermo',tipo:'Originale',pac:22,pven:45},
-{brand:'Xiaomi',model:'Schermo Poco M6',cat:'Schermo',tipo:'Compatibile',pac:11,pven:26},
-{brand:'Xiaomi',model:'Batteria Xiaomi 13/14',cat:'Batteria',tipo:'Originale',pac:13,pven:30},
-{brand:'Xiaomi',model:'Batteria Xiaomi 13/14',cat:'Batteria',tipo:'Compatibile',pac:7,pven:17},
-{brand:'Xiaomi',model:'Batteria Xiaomi 11/12',cat:'Batteria',tipo:'Originale',pac:11,pven:26},
-{brand:'Xiaomi',model:'Batteria Xiaomi 11/12',cat:'Batteria',tipo:'Compatibile',pac:6,pven:15},
-{brand:'Xiaomi',model:'Batteria Redmi Note 12/13',cat:'Batteria',tipo:'Originale',pac:9,pven:22},
-{brand:'Xiaomi',model:'Batteria Redmi Note 12/13',cat:'Batteria',tipo:'Compatibile',pac:5,pven:13},
-{brand:'Xiaomi',model:'Batteria Redmi Note 10/11',cat:'Batteria',tipo:'Originale',pac:8,pven:20},
-{brand:'Xiaomi',model:'Batteria Redmi Note 10/11',cat:'Batteria',tipo:'Compatibile',pac:4,pven:12},
-{brand:'Xiaomi',model:'Batteria Redmi 10/12/13C',cat:'Batteria',tipo:'Originale',pac:8,pven:19},
-{brand:'Xiaomi',model:'Batteria Redmi 10/12/13C',cat:'Batteria',tipo:'Compatibile',pac:4,pven:11},
-{brand:'Xiaomi',model:'Connettore USB-C Redmi/Poco',cat:'Connettore',tipo:'Originale',pac:6,pven:14},
-{brand:'Xiaomi',model:'Connettore USB-C Redmi/Poco',cat:'Connettore',tipo:'Compatibile',pac:3,pven:8},
-{brand:'Xiaomi',model:'Vetro Posteriore Redmi Note serie',cat:'Vetro Posteriore',tipo:'Originale',pac:10,pven:24},
-{brand:'Xiaomi',model:'Vetro Posteriore Redmi Note serie',cat:'Vetro Posteriore',tipo:'Compatibile',pac:5,pven:14},
-// ===== HUAWEI =====
-{brand:'Huawei',model:'Schermo Huawei P60 Pro',cat:'Schermo',tipo:'Originale',pac:110,pven:195},
-{brand:'Huawei',model:'Schermo Huawei P60 Pro',cat:'Schermo',tipo:'Compatibile',pac:57,pven:115},
-{brand:'Huawei',model:'Schermo Huawei P50 Pro',cat:'Schermo',tipo:'Originale',pac:95,pven:170},
-{brand:'Huawei',model:'Schermo Huawei P50 Pro',cat:'Schermo',tipo:'Compatibile',pac:49,pven:99},
-{brand:'Huawei',model:'Schermo Huawei P40 Pro',cat:'Schermo',tipo:'Originale',pac:75,pven:140},
-{brand:'Huawei',model:'Schermo Huawei P40 Pro',cat:'Schermo',tipo:'Compatibile',pac:39,pven:82},
-{brand:'Huawei',model:'Schermo Huawei P40 Lite',cat:'Schermo',tipo:'Originale',pac:35,pven:68},
-{brand:'Huawei',model:'Schermo Huawei P40 Lite',cat:'Schermo',tipo:'Compatibile',pac:18,pven:40},
-{brand:'Huawei',model:'Schermo Huawei P30 Pro',cat:'Schermo',tipo:'Originale',pac:60,pven:115},
-{brand:'Huawei',model:'Schermo Huawei P30 Pro',cat:'Schermo',tipo:'Compatibile',pac:31,pven:68},
-{brand:'Huawei',model:'Schermo Huawei P30 Lite',cat:'Schermo',tipo:'Originale',pac:28,pven:55},
-{brand:'Huawei',model:'Schermo Huawei P30 Lite',cat:'Schermo',tipo:'Compatibile',pac:14,pven:32},
-{brand:'Huawei',model:'Schermo Huawei Mate 40 Pro',cat:'Schermo',tipo:'Originale',pac:120,pven:210},
-{brand:'Huawei',model:'Schermo Huawei Mate 40 Pro',cat:'Schermo',tipo:'Compatibile',pac:62,pven:125},
-{brand:'Huawei',model:'Schermo Huawei Mate 20 Pro',cat:'Schermo',tipo:'Originale',pac:80,pven:150},
-{brand:'Huawei',model:'Schermo Huawei Mate 20 Pro',cat:'Schermo',tipo:'Compatibile',pac:41,pven:88},
-{brand:'Huawei',model:'Schermo Huawei Nova 11',cat:'Schermo',tipo:'Originale',pac:45,pven:85},
-{brand:'Huawei',model:'Schermo Huawei Nova 11',cat:'Schermo',tipo:'Compatibile',pac:23,pven:50},
-{brand:'Huawei',model:'Schermo Huawei Nova 9',cat:'Schermo',tipo:'Originale',pac:38,pven:72},
-{brand:'Huawei',model:'Schermo Huawei Nova 9',cat:'Schermo',tipo:'Compatibile',pac:20,pven:42},
-{brand:'Huawei',model:'Schermo Huawei Y9 / Y7',cat:'Schermo',tipo:'Originale',pac:22,pven:45},
-{brand:'Huawei',model:'Schermo Huawei Y9 / Y7',cat:'Schermo',tipo:'Compatibile',pac:11,pven:26},
-{brand:'Huawei',model:'Batteria Huawei P60/P50',cat:'Batteria',tipo:'Originale',pac:16,pven:36},
-{brand:'Huawei',model:'Batteria Huawei P60/P50',cat:'Batteria',tipo:'Compatibile',pac:8,pven:20},
-{brand:'Huawei',model:'Batteria Huawei P40/P30',cat:'Batteria',tipo:'Originale',pac:13,pven:30},
-{brand:'Huawei',model:'Batteria Huawei P40/P30',cat:'Batteria',tipo:'Compatibile',pac:7,pven:17},
-{brand:'Huawei',model:'Batteria Huawei Mate serie',cat:'Batteria',tipo:'Originale',pac:15,pven:34},
-{brand:'Huawei',model:'Batteria Huawei Mate serie',cat:'Batteria',tipo:'Compatibile',pac:8,pven:19},
-{brand:'Huawei',model:'Batteria Huawei Nova serie',cat:'Batteria',tipo:'Originale',pac:11,pven:26},
-{brand:'Huawei',model:'Batteria Huawei Nova serie',cat:'Batteria',tipo:'Compatibile',pac:6,pven:15},
-{brand:'Huawei',model:'Connettore USB-C Huawei P/Mate',cat:'Connettore',tipo:'Originale',pac:7,pven:16},
-{brand:'Huawei',model:'Connettore USB-C Huawei P/Mate',cat:'Connettore',tipo:'Compatibile',pac:4,pven:9},
-// ===== NOTEBOOK =====
-{brand:'Notebook',model:'Display 13.3" FHD IPS (HP/Dell/Lenovo)',cat:'Schermo',tipo:'Originale',pac:50,pven:95},
-{brand:'Notebook',model:'Display 13.3" FHD IPS (HP/Dell/Lenovo)',cat:'Schermo',tipo:'Compatibile',pac:26,pven:56},
-{brand:'Notebook',model:'Display 14" FHD IPS',cat:'Schermo',tipo:'Originale',pac:55,pven:99},
-{brand:'Notebook',model:'Display 14" FHD IPS',cat:'Schermo',tipo:'Compatibile',pac:28,pven:58},
-{brand:'Notebook',model:'Display 15.6" FHD IPS',cat:'Schermo',tipo:'Originale',pac:55,pven:99},
-{brand:'Notebook',model:'Display 15.6" FHD IPS',cat:'Schermo',tipo:'Compatibile',pac:28,pven:58},
-{brand:'Notebook',model:'Display 15.6" HD TN',cat:'Schermo',tipo:'Originale',pac:38,pven:72},
-{brand:'Notebook',model:'Display 15.6" HD TN',cat:'Schermo',tipo:'Compatibile',pac:20,pven:42},
-{brand:'Notebook',model:'Display 17.3" FHD IPS',cat:'Schermo',tipo:'Originale',pac:65,pven:120},
-{brand:'Notebook',model:'Display 17.3" FHD IPS',cat:'Schermo',tipo:'Compatibile',pac:33,pven:70},
-{brand:'Notebook',model:'Display Touch 13"-14" (convertibili)',cat:'Schermo',tipo:'Originale',pac:90,pven:160},
-{brand:'Notebook',model:'Display Touch 13"-14" (convertibili)',cat:'Schermo',tipo:'Compatibile',pac:46,pven:94},
-{brand:'Notebook',model:'Cerniere (coppia) notebook 14"-15.6"',cat:'Altro',tipo:'Originale',pac:18,pven:40},
-{brand:'Notebook',model:'Cerniere (coppia) notebook 14"-15.6"',cat:'Altro',tipo:'Compatibile',pac:9,pven:24},
-{brand:'Notebook',model:'Batteria HP Pavilion/EliteBook',cat:'Batteria',tipo:'Originale',pac:35,pven:68},
-{brand:'Notebook',model:'Batteria HP Pavilion/EliteBook',cat:'Batteria',tipo:'Compatibile',pac:18,pven:40},
-{brand:'Notebook',model:'Batteria Dell Inspiron/Latitude',cat:'Batteria',tipo:'Originale',pac:38,pven:72},
-{brand:'Notebook',model:'Batteria Dell Inspiron/Latitude',cat:'Batteria',tipo:'Compatibile',pac:20,pven:42},
-{brand:'Notebook',model:'Batteria Lenovo IdeaPad/ThinkPad',cat:'Batteria',tipo:'Originale',pac:40,pven:75},
-{brand:'Notebook',model:'Batteria Lenovo IdeaPad/ThinkPad',cat:'Batteria',tipo:'Compatibile',pac:21,pven:44},
-{brand:'Notebook',model:'Batteria Asus VivoBook/ZenBook',cat:'Batteria',tipo:'Originale',pac:35,pven:68},
-{brand:'Notebook',model:'Batteria Asus VivoBook/ZenBook',cat:'Batteria',tipo:'Compatibile',pac:18,pven:40},
-{brand:'Notebook',model:'Batteria Acer Aspire/Swift',cat:'Batteria',tipo:'Originale',pac:32,pven:62},
-{brand:'Notebook',model:'Batteria Acer Aspire/Swift',cat:'Batteria',tipo:'Compatibile',pac:16,pven:36},
-{brand:'Notebook',model:'Tastiera notebook 15.6" (layout IT)',cat:'Altro',tipo:'Originale',pac:20,pven:45},
-{brand:'Notebook',model:'Tastiera notebook 15.6" (layout IT)',cat:'Altro',tipo:'Compatibile',pac:10,pven:26},
-{brand:'Notebook',model:'Tastiera notebook 14" (layout IT)',cat:'Altro',tipo:'Originale',pac:18,pven:42},
-{brand:'Notebook',model:'Tastiera notebook 14" (layout IT)',cat:'Altro',tipo:'Compatibile',pac:9,pven:24},
-{brand:'Notebook',model:'Alimentatore universale 65W',cat:'Altro',tipo:'Originale',pac:14,pven:32},
-{brand:'Notebook',model:'Alimentatore universale 65W',cat:'Altro',tipo:'Compatibile',pac:7,pven:18},
-{brand:'Notebook',model:'Alimentatore originale 90W',cat:'Altro',tipo:'Originale',pac:25,pven:48},
-{brand:'Notebook',model:'Alimentatore originale 90W',cat:'Altro',tipo:'Compatibile',pac:13,pven:28},
-{brand:'Notebook',model:'Ventola raffreddamento CPU notebook',cat:'Altro',tipo:'Originale',pac:12,pven:30},
-{brand:'Notebook',model:'Ventola raffreddamento CPU notebook',cat:'Altro',tipo:'Compatibile',pac:6,pven:18},
-{brand:'Notebook',model:'SSD M.2 NVMe 512GB',cat:'Altro',tipo:'Originale',pac:35,pven:65},
-{brand:'Notebook',model:'SSD M.2 NVMe 512GB',cat:'Altro',tipo:'Compatibile',pac:18,pven:38},
-{brand:'Notebook',model:'SSD M.2 NVMe 1TB',cat:'Altro',tipo:'Originale',pac:55,pven:99},
-{brand:'Notebook',model:'SSD M.2 NVMe 1TB',cat:'Altro',tipo:'Compatibile',pac:28,pven:58},
-{brand:'Notebook',model:'RAM SODIMM DDR4 8GB',cat:'Altro',tipo:'Originale',pac:22,pven:42},
-{brand:'Notebook',model:'RAM SODIMM DDR4 8GB',cat:'Altro',tipo:'Compatibile',pac:11,pven:24},
-{brand:'Notebook',model:'RAM SODIMM DDR4 16GB',cat:'Altro',tipo:'Originale',pac:38,pven:68},
-{brand:'Notebook',model:'RAM SODIMM DDR4 16GB',cat:'Altro',tipo:'Compatibile',pac:20,pven:40},
-{brand:'Notebook',model:'Cerniera + cover schermo notebook',cat:'Altro',tipo:'Originale',pac:16,pven:38},
-{brand:'Notebook',model:'Cerniera + cover schermo notebook',cat:'Altro',tipo:'Compatibile',pac:8,pven:22},
-{brand:'Notebook',model:'Connettore DC Jack alimentazione',cat:'Connettore',tipo:'Originale',pac:8,pven:20},
-{brand:'Notebook',model:'Connettore DC Jack alimentazione',cat:'Connettore',tipo:'Compatibile',pac:4,pven:12},
-];
-
-
 var ML = JSON.parse(localStorage.getItem('rp_ml') || 'null');
 if (!ML) {
   ML = [
@@ -1177,9 +701,9 @@ function vai(id, btn) {
   if (btn) btn.classList.add('on');
   if (id === 'dashboard')   renderDash();
   if (id === 'riparazioni') renderRip();
-  if (id === 'preventivi')  initPreventivi();
   if (id === 'clienti')     renderClienti();
   if (id === 'magazzino')   renderMag();
+  if (id === 'ordini')      renderOrdini();
   if (id === 'fatture')     renderFat();
   if (id === 'storico')     renderStorico();
   if (id === 'statistiche') renderStats();
@@ -1439,7 +963,6 @@ document.addEventListener('click', function(e) {
 // ============================================================
 function mostraModaleR() {
   apriM('modal-r');
-  popolaSelectRicambi('nr');
   setTimeout(function() {
     initGriglia('new');
     resetGriglia('new');
@@ -1447,69 +970,13 @@ function mostraModaleR() {
   }, 50);
 }
 
-// ============================================================
-// RICAMBI DA MAGAZZINO (collegamento a scheda riparazione)
-// ============================================================
-function popolaSelectRicambi(prefix) {
-  var sel = document.getElementById(prefix + '-ricambio');
-  if (!sel) return;
-  var html = '<option value="">-- Nessun ricambio --</option>';
-  for (var i = 0; i < ML.length; i++) {
-    var m = ML[i];
-    if (m.qty <= 0) continue;
-    html += '<option value="' + i + '">' + m.desc + ' (' + m.cod + ') - disp. ' + m.qty + '</option>';
-  }
-  sel.innerHTML = html;
-  var info = document.getElementById(prefix + '-ricambio-info');
-  if (info) info.textContent = 'Seleziona un articolo';
-  var qty = document.getElementById(prefix + '-ricambio-qty');
-  if (qty) qty.value = 1;
-}
-
-function aggQtaMaxRicambio(prefix) {
-  var sel = document.getElementById(prefix + '-ricambio');
-  var info = document.getElementById(prefix + '-ricambio-info');
-  var qtyInp = document.getElementById(prefix + '-ricambio-qty');
-  if (sel.value === '') { info.textContent = 'Seleziona un articolo'; return; }
-  var m = ML[parseInt(sel.value)];
-  if (!m) return;
-  info.textContent = 'Disponibili: ' + m.qty;
-  qtyInp.max = m.qty;
-  if (parseInt(qtyInp.value) > m.qty) qtyInp.value = m.qty;
-}
-
-// Scala la quantita dal magazzino. Ritorna l'oggetto ricambio usato (per storicizzarlo nella scheda) o null.
-function scalaRicambio(prefix) {
-  var sel = document.getElementById(prefix + '-ricambio');
-  if (!sel || sel.value === '') return null;
-  var idx = parseInt(sel.value);
-  var m = ML[idx];
-  if (!m) return null;
-  var qtyReq = parseInt(document.getElementById(prefix + '-ricambio-qty').value) || 1;
-  if (qtyReq < 1) qtyReq = 1;
-  if (qtyReq > m.qty) qtyReq = m.qty;
-  m.qty = Math.max(0, m.qty - qtyReq);
-  return { cod: m.cod, desc: m.desc, qty: qtyReq };
-}
-
-function resetSelectRicambio(prefix) {
-  var sel = document.getElementById(prefix + '-ricambio');
-  if (sel) sel.value = '';
-  var qty = document.getElementById(prefix + '-ricambio-qty');
-  if (qty) qty.value = 1;
-  var info = document.getElementById(prefix + '-ricambio-info');
-  if (info) info.textContent = 'Seleziona un articolo';
-}
-
 function salvaRip() {
   var nome = document.getElementById('nr-nome').value.trim();
   var device = document.getElementById('nr-device').value.trim();
   if (!nome || !device) { alert('Inserisci almeno nome e dispositivo'); return; }
   RID++;
-  var ricambioUsato = scalaRicambio('nr');
   var obj = {
     id: RID,
-    categoria: document.getElementById('nr-categoria').value,
     nome: nome,
     tel: document.getElementById('nr-tel').value,
     email: document.getElementById('nr-email').value,
@@ -1523,11 +990,11 @@ function salvaRip() {
     estetica: document.getElementById('nr-estetica').value,
     consegna: document.getElementById('nr-consegna').value,
     stato: document.getElementById('nr-stato').value,
+    waStato: document.getElementById('nr-wa-stato') ? document.getElementById('nr-wa-stato').value : '',
     datric: document.getElementById('nr-datric').value,
     esito: document.getElementById('nr-esito').value,
     problema: document.getElementById('nr-problema').value,
     note: document.getElementById('nr-note').value,
-    ricambi: ricambioUsato ? [ricambioUsato] : [],
     data: new Date().toLocaleDateString('it-IT')
   };
   RL.unshift(obj);
@@ -1536,19 +1003,15 @@ function salvaRip() {
   renderRip();
   renderDash();
   renderNotif();
-  renderMag();
   // reset form
   var ids = ['nr-nome','nr-tel','nr-email','nr-device','nr-imei','nr-costo','nr-pin','nr-problema','nr-note','nr-consegna','nr-datric'];
+  var elWa = document.getElementById('nr-wa-stato'); if (elWa) elWa.value = '';
   for (var i = 0; i < ids.length; i++) document.getElementById(ids[i]).value = '';
   document.getElementById('nr-stato').value = 'In attesa';
   document.getElementById('nr-esito').value = '';
-  document.getElementById('nr-categoria').value = 'Smartphone';
-  resetSelectRicambio('nr');
   resetGriglia('new');
   caricaEst('nr', '8');
-  var msg = 'Per ' + nome + ' - ' + device;
-  if (ricambioUsato) msg += ' | Scalato: ' + ricambioUsato.desc + ' x' + ricambioUsato.qty;
-  showToast('Scheda #' + RID + ' salvata!', msg);
+  showToast('Scheda #' + RID + ' salvata!', 'Per ' + nome + ' - ' + device);
 }
 
 // ============================================================
@@ -1582,7 +1045,7 @@ function renderRip(lista) {
     }
     html += '<tr>'
       + '<td><b style="font-family:monospace;color:#ff5500">#' + r.id + '</b></td>'
-      + '<td><b>' + r.nome + '</b><br><small style="color:#555">' + (r.tel || '') + '</small></td>'
+      + '<td><b>' + r.nome + '</b><br><small style="color:#555">' + (r.tel || '') + '</small>'        + (r.waStato === 'accettato' ? '<br><span style="display:inline-block;margin-top:2px;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:700;background:#d1fae5;color:#065f46">&#9989; Accettato</span>' : '')        + (r.waStato === 'rifiutato' ? '<br><span style="display:inline-block;margin-top:2px;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:700;background:#fee2e2;color:#991b1b">&#10060; Rifiutato</span>' : '')        + (r.waStato === 'inviato'   ? '<br><span style="display:inline-block;margin-top:2px;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:700;background:#fef3c7;color:#92400e">&#128228; Inviato</span>' : '')      + '</td>'
       + '<td>' + r.device + '</td>'
       + '<td><span style="font-size:11px;color:#888">' + (r.tipo || '-') + '</span></td>'
       + '<td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (r.problema || '-') + '</td>'
@@ -1640,7 +1103,6 @@ function apriModifica(id) {
   for (var i = 0; i < RL.length; i++) { if (RL[i].id === id) { r = RL[i]; break; } }
   if (!r) return;
   document.getElementById('e-id').value = r.id;
-  document.getElementById('e-categoria').value = r.categoria || 'Smartphone';
   document.getElementById('e-nome').value = r.nome || '';
   document.getElementById('e-tel').value = r.tel || '';
   document.getElementById('e-email').value = r.email || '';
@@ -1656,18 +1118,7 @@ function apriModifica(id) {
   document.getElementById('e-datric').value = r.datric || '';
   document.getElementById('e-problema').value = r.problema || '';
   document.getElementById('e-note').value = r.note || '';
-  popolaSelectRicambi('e');
-  resetSelectRicambio('e');
-  var ricInfo = document.getElementById('e-ricambi-usati');
-  if (r.ricambi && r.ricambi.length) {
-    var rh = '';
-    for (var j = 0; j < r.ricambi.length; j++) {
-      rh += '<div>- ' + r.ricambi[j].desc + ' (' + r.ricambi[j].cod + ') x' + r.ricambi[j].qty + '</div>';
-    }
-    ricInfo.innerHTML = rh;
-  } else {
-    ricInfo.innerHTML = 'Nessun ricambio registrato';
-  }
+  if (document.getElementById('e-wa-stato')) document.getElementById('e-wa-stato').value = r.waStato || '';
   caricaGriglia('edit', r.schema || '');
   setTimeout(function() { caricaEst('e', r.estetica || '8'); }, 30);
   apriM('modal-e');
@@ -1683,7 +1134,6 @@ function aggiornaRip() {
   var device = document.getElementById('e-device').value.trim();
   if (!nome || !device) { alert('Inserisci almeno nome e dispositivo'); return; }
   var old = r.stato;
-  r.categoria = document.getElementById('e-categoria').value;
   r.nome = nome;
   r.tel = document.getElementById('e-tel').value;
   r.email = document.getElementById('e-email').value;
@@ -1708,21 +1158,14 @@ function aggiornaRip() {
   r.datric = document.getElementById('e-datric').value;
   r.problema = document.getElementById('e-problema').value;
   r.note = document.getElementById('e-note').value;
-  var ricambioUsato = scalaRicambio('e');
-  if (ricambioUsato) {
-    if (!r.ricambi) r.ricambi = [];
-    r.ricambi.push(ricambioUsato);
-  }
+  r.waStato = document.getElementById('e-wa-stato') ? document.getElementById('e-wa-stato').value : '';
   salva();
   chiudiM('modal-e');
   renderRip();
   renderDash();
   renderNotif();
-  renderMag();
-  var msg = nome + ' - ' + device;
-  if (ricambioUsato) msg += ' | Scalato: ' + ricambioUsato.desc + ' x' + ricambioUsato.qty;
   if (r.stato === 'Pronto' && old !== 'Pronto') showToast('Pronto!', r.device + ' di ' + r.nome + ' e pronto!');
-  else showToast('Scheda #' + id + ' aggiornata!', msg);
+  else showToast('Scheda #' + id + ' aggiornata!', nome + ' - ' + device);
 }
 
 // ============================================================
@@ -1753,7 +1196,9 @@ function box(lbl, val) {
     + '<div style="font-weight:600;font-size:13px">' + (val || '-') + '</div></div>';
 }
 
+var scedaAttivaId = null;
 function apriScheda(id) {
+  scedaAttivaId = id;
   var r = null;
   for (var i = 0; i < RL.length; i++) { if (RL[i].id === id) { r = RL[i]; break; } }
   if (!r) return;
@@ -1782,19 +1227,17 @@ function apriScheda(id) {
         + '<div style="font-size:20px;font-weight:800;color:#ff5500">SCHEDA #' + r.id + '</div>'
         + '<div style="font-size:12px;color:#999">' + r.data + '</div>'
         + (r.consegna ? '<div style="font-size:12px;color:#ff5500;font-weight:600">Consegna: ' + r.consegna + '</div>' : '')
-        + (r.dataConsegnato ? '<div style="font-size:12px;font-weight:700;color:#22c55e">&#10003; Consegnato il: ' + r.dataConsegnato + '</div>' : '')
+        + (r.dataConsegnato ? '<div style="font-size:12px;font-weight:700;color:#22c55e">&#10003; Consegnato il: ' + r.dataConsegnato + '</div>' : '')        + (r.waStato ? '<div style="font-size:12px;margin-top:4px"><span style="padding:2px 10px;border-radius:20px;font-weight:700;' + (r.waStato==='accettato'?'background:#d1fae5;color:#065f46':r.waStato==='rifiutato'?'background:#fee2e2;color:#991b1b':'background:#fef3c7;color:#92400e') + '">' + (r.waStato==='accettato'?'&#9989; Preventivo Accettato':r.waStato==='rifiutato'?'&#10060; Preventivo Rifiutato':'&#128228; Preventivo Inviato') + '</span></div>' : '')
       + '</div>'
     + '</div>'
     + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:10px">'
       + box('Cliente', r.nome) + box('Telefono', r.tel) + box('Email', r.email)
     + '</div>'
     + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:10px">'
-      + box('Categoria', r.categoria || '-') + box('Dispositivo', r.device) + box('IMEI', r.imei)
+      + box('Dispositivo', r.device) + box('IMEI', r.imei) + box('Tipo Intervento', r.tipo)
     + '</div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:10px">'
-      + box('Tipo Intervento', r.tipo) + box('Condizione Estetica', r.estetica) + box('Accessori', r.accessori)
-    + '</div>'
-    + '<div style="display:grid;grid-template-columns:1fr;gap:9px;margin-bottom:12px">'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:12px">'
+      + box('Condizione Estetica', r.estetica) + box('Accessori', r.accessori)
       + '<div style="background:#fff8f5;padding:9px;border-radius:7px;border:1px solid #ffddcc">'
         + '<div style="font-size:9px;color:#ff5500;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Preventivo</div>'
         + '<div style="font-weight:700;font-size:16px;color:#ff5500">' + (r.costo ? 'EUR ' + parseFloat(r.costo).toFixed(2) : 'Da definire') + '</div>'
@@ -1802,7 +1245,6 @@ function apriScheda(id) {
     + '</div>'
     + sbl
     + '<div style="margin-bottom:10px"><div style="font-size:10px;text-transform:uppercase;color:#ff5500;letter-spacing:1px;margin-bottom:5px;font-weight:600">Problema Segnalato</div><div style="background:#fff8f5;border:1px solid #ffddcc;padding:10px;border-radius:7px;font-size:13px">' + (r.problema || '-') + '</div></div>'
-    + (r.ricambi && r.ricambi.length ? '<div style="margin-bottom:10px"><div style="font-size:10px;text-transform:uppercase;color:#999;letter-spacing:1px;margin-bottom:5px;font-weight:600">Ricambi Utilizzati</div><div style="background:#f9f9f9;border:1px solid #eee;padding:10px;border-radius:7px;font-size:13px;color:#555">' + r.ricambi.map(function(rc){ return rc.desc + ' (' + rc.cod + ') x' + rc.qty; }).join('<br>') + '</div></div>' : '')
     + (r.note ? '<div style="margin-bottom:10px"><div style="font-size:10px;text-transform:uppercase;color:#999;letter-spacing:1px;margin-bottom:5px;font-weight:600">Note Tecniche</div><div style="background:#f9f9f9;border:1px solid #eee;padding:10px;border-radius:7px;font-size:13px;color:#555">' + r.note + '</div></div>' : '')
     + '<div style="margin-top:12px;padding-top:10px;border-top:2px solid #eee">'
       + '<div style="font-size:10px;text-transform:uppercase;color:#ff5500;letter-spacing:1px;margin-bottom:7px;font-weight:600">Condizioni del Servizio</div>'
@@ -1861,10 +1303,8 @@ function getClienti() {
 function renderClienti() {
   var q = (document.getElementById('cl-q') || {}).value || '';
   var ql = q.toLowerCase();
-  var catFiltro = (document.getElementById('cl-cat') || {}).value || '';
   var list = getClienti();
   if (q) list = list.filter(function(c) { return c.nome.toLowerCase().indexOf(ql) !== -1 || c.tel.indexOf(q) !== -1; });
-  if (catFiltro) list = list.filter(function(c) { return c.rips.some(function(r) { return r.categoria === catFiltro; }); });
   _clList = list;
   var tb = document.getElementById('cl-tb');
   if (!list.length) {
@@ -1904,7 +1344,7 @@ function apriCliente(idx) {
     var r = rips[i];
     var ec = r.esito === 'Riparato' ? '#40d080' : r.esito === 'Irriparabile' ? '#ff4444' : r.esito ? '#ff8800' : '#aaa';
     html += '<div style="background:#1a1a1a;border:1px solid #222;border-radius:10px;padding:13px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px">'
-      + '<div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><b style="font-family:monospace;color:#ff5500">#' + r.id + '</b><b>' + r.device + '</b>' + (r.categoria ? '<span class="badge" style="background:#222;color:#4080ff;border:1px solid #2a3a55">' + r.categoria + '</span>' : '') + badgeHtml(r.stato) + '</div>'
+      + '<div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><b style="font-family:monospace;color:#ff5500">#' + r.id + '</b><b>' + r.device + '</b>' + badgeHtml(r.stato) + '</div>'
       + '<div style="font-size:12px;color:#888">' + (r.problema || '-') + '</div>'
       + '<div style="font-size:11px;color:#555;margin-top:3px;font-family:monospace">' + r.data + (r.consegna ? ' > ' + r.consegna : '') + '</div></div>'
       + '<div style="text-align:right;flex-shrink:0">'
@@ -2067,18 +1507,12 @@ function renderDash() {
 // ============================================================
 // MAGAZZINO
 // ============================================================
-function mostraModaleM() { document.getElementById('modal-m-title').textContent = 'Aggiungi Pezzo'; document.getElementById('m-editidx').value = ''; var ids=['m-cod','m-desc','m-pac','m-pven']; for (var i=0;i<ids.length;i++) document.getElementById(ids[i]).value=''; document.getElementById('m-qty').value=1; document.getElementById('m-min').value=2; apriM('modal-m'); }
-
-function apriListinoUfficiale() {
-  apriM('modal-listino');
-  renderCatalogo();
-}
+function mostraModaleM() { apriM('modal-m'); }
 
 function salvaMag() {
   var desc = document.getElementById('m-desc').value.trim();
   if (!desc) { alert('Inserisci la descrizione'); return; }
-  var editIdx = document.getElementById('m-editidx').value;
-  var obj = {
+  ML.push({
     cod: document.getElementById('m-cod').value || 'N/A',
     desc: desc,
     cat: document.getElementById('m-cat').value,
@@ -2086,90 +1520,62 @@ function salvaMag() {
     min: parseInt(document.getElementById('m-min').value) || 0,
     pac: parseFloat(document.getElementById('m-pac').value) || 0,
     pven: parseFloat(document.getElementById('m-pven').value) || 0
-  };
-  if (editIdx !== '') {
-    ML[parseInt(editIdx)] = obj;
-  } else {
-    ML.push(obj);
-  }
+  });
   salva();
   chiudiM('modal-m');
   renderMag();
   var ids = ['m-cod','m-desc','m-pac','m-pven'];
   for (var i = 0; i < ids.length; i++) document.getElementById(ids[i]).value = '';
-  document.getElementById('m-editidx').value = '';
-  showToast(editIdx !== '' ? 'Pezzo aggiornato!' : 'Pezzo aggiunto!', desc);
-}
-
-function modificaMagItem(i) {
-  var m = ML[i];
-  if (!m) return;
-  document.getElementById('modal-m-title').textContent = 'Modifica Pezzo';
-  document.getElementById('m-editidx').value = i;
-  document.getElementById('m-cod').value = m.cod;
-  document.getElementById('m-cat').value = m.cat;
-  document.getElementById('m-desc').value = m.desc;
-  document.getElementById('m-qty').value = m.qty;
-  document.getElementById('m-min').value = m.min;
-  document.getElementById('m-pac').value = m.pac;
-  document.getElementById('m-pven').value = m.pven;
-  apriM('modal-m');
-}
-
-function popolaFiltroCategoriaMag() {
-  var sel = document.getElementById('mag-cat');
-  var cur = sel.value;
-  var cats = [];
-  for (var i = 0; i < ML.length; i++) { if (cats.indexOf(ML[i].cat) === -1) cats.push(ML[i].cat); }
-  cats.sort();
-  var html = '<option value="">Tutte le categorie</option>';
-  for (var i = 0; i < cats.length; i++) html += '<option value="' + cats[i] + '">' + cats[i] + '</option>';
-  if (sel.innerHTML !== html) { sel.innerHTML = html; sel.value = cur; }
+  showToast('Pezzo aggiunto!', desc);
 }
 
 function renderMag() {
-  popolaFiltroCategoriaMag();
-  var q = (document.getElementById('mag-q') || {}).value || '';
-  var ql = q.toLowerCase();
-  var catF = (document.getElementById('mag-cat') || {}).value || '';
-  var statoF = (document.getElementById('mag-stato') || {}).value || '';
-
   var sc = [];
   for (var i = 0; i < ML.length; i++) { if (ML[i].qty <= ML[i].min) sc.push(ML[i]); }
   document.getElementById('mag-alert').innerHTML = sc.length
     ? '<div class="alert alert-w"><b>' + sc.length + ' articolo/i</b> sotto scorta minima</div>' : '';
-
-  var disp = ML.filter(function(m) { return m.qty > 0; }).length;
-
-  var list = [];
+  var tb = document.getElementById('mag-tb');
+  if (!ML.length) { tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:36px;color:#555">Magazzino vuoto</td></tr>'; return; }
+  var q    = document.getElementById('mag-search') ? document.getElementById('mag-search').value.toLowerCase().trim() : '';
+  var cat  = document.getElementById('mag-filter-cat') ? document.getElementById('mag-filter-cat').value : '';
+  var disp = document.getElementById('mag-filter-disp') ? document.getElementById('mag-filter-disp').value : '';
+  var filtered = [];
   for (var i = 0; i < ML.length; i++) {
     var m = ML[i];
-    if (ql && m.desc.toLowerCase().indexOf(ql) === -1 && m.cod.toLowerCase().indexOf(ql) === -1 && m.cat.toLowerCase().indexOf(ql) === -1) continue;
-    if (catF && m.cat !== catF) continue;
-    if (statoF === 'disp' && m.qty <= 0) continue;
-    if (statoF === 'scorta' && m.qty > m.min) continue;
-    list.push({ idx: i, item: m });
+    if (q && (m.desc||'').toLowerCase().indexOf(q)===-1 && (m.cod||'').toLowerCase().indexOf(q)===-1 && (m.cat||'').toLowerCase().indexOf(q)===-1) continue;
+    if (cat && m.cat !== cat) continue;
+    if (disp === 'disp' && m.qty <= 0) continue;
+    if (disp === 'esau' && m.qty > 0) continue;
+    if (disp === 'bassa' && m.qty > m.min) continue;
+    filtered.push({ m: m, i: i });
   }
-
-  document.getElementById('mag-count').textContent = ML.length + ' articoli  \u2022  ' + disp + ' disponibili  \u2022  ' + sc.length + ' sotto scorta';
-
-  var tb = document.getElementById('mag-tb');
-  if (!list.length) { tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:36px;color:#555">Nessun articolo trovato</td></tr>'; return; }
+  var infoEl = document.getElementById('mag-search-info');
+  if (infoEl) {
+    if (q || cat || disp) {
+      infoEl.innerHTML = '&#128269; ' + filtered.length + ' risultat' + (filtered.length===1?'o':'i') + ' su ' + ML.length;
+    } else {
+      infoEl.innerHTML = ML.length + ' articoli &nbsp;&bull;&nbsp; <b style="color:#40d080">' + ML.filter(function(x){return x.qty>x.min;}).length + ' disponibili</b> &nbsp;&bull;&nbsp; <b style="color:#ff2200">' + sc.length + ' sotto scorta</b>';
+    }
+  }
+  if (!filtered.length) { tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:36px;color:#555">Nessun risultato</td></tr>'; return; }
   var html = '';
-  for (var k = 0; k < list.length; k++) {
-    var i = list[k].idx;
-    var m = list[k].item;
-    html += '<tr>'
-      + '<td><code style="color:#ff8800">' + m.cod + '</code></td>'
+  for (var j = 0; j < filtered.length; j++) {
+    var m = filtered[j].m; var i = filtered[j].i;
+    var esaurito = m.qty === 0; var bassa = m.qty > 0 && m.qty <= m.min;
+    var qColor = esaurito ? '#ff2200' : bassa ? '#ff8800' : '#40d080';
+    var qBadge = esaurito ? m.qty + ' <span style="font-size:10px;background:#330000;color:#ff4444;padding:1px 5px;border-radius:8px">ESAURITO</span>'
+               : bassa    ? m.qty + ' <span style="font-size:10px;background:#332200;color:#ff8800;padding:1px 5px;border-radius:8px">BASSA</span>' : m.qty;
+    html += '<tr style="' + (esaurito?'opacity:0.55':'') + '">'
+      + '<td><code style="color:#ff8800">' + (m.cod||'-') + '</code></td>'
       + '<td><b>' + m.desc + '</b></td>'
-      + '<td>' + m.cat + '</td>'
-      + '<td><b style="color:' + (m.qty <= m.min ? '#ff2200' : '#40d080') + '">' + m.qty + '</b>' + (m.qty <= m.min ? ' !' : '') + '</td>'
-      + '<td>EUR ' + m.pac.toFixed(2) + '</td>'
-      + '<td>EUR ' + m.pven.toFixed(2) + '</td>'
+      + '<td><span style="font-size:11px;background:#1a1a1a;padding:2px 7px;border-radius:10px">' + m.cat + '</span></td>'
+      + '<td><b style="color:' + qColor + '">' + qBadge + '</b></td>'
+      + '<td>EUR ' + (m.pac||0).toFixed(2) + '</td>'
+      + '<td><b>EUR ' + (m.pven||0).toFixed(2) + '</b></td>'
       + '<td style="white-space:nowrap">'
         + '<button class="btn btn-g btn-sm" style="border-color:#40d080;color:#40d080;margin-right:3px" data-mi="' + i + '" onclick="adjQta(+this.dataset.mi,1)">+</button>'
         + '<button class="btn btn-g btn-sm" style="margin-right:3px" data-mi="' + i + '" onclick="adjQta(+this.dataset.mi,-1)">-</button>'
-        + '<button class="btn btn-g btn-sm" style="border-color:#ffaa00;color:#ffaa00;margin-right:3px" data-mi="' + i + '" onclick="modificaMagItem(+this.dataset.mi)">Modif.</button>'
+        + '<button class="btn btn-g btn-sm" style="border-color:#ff8800;color:#ff8800;margin-right:3px" data-mi="' + i + '" onclick="apriModMag(+this.dataset.mi)">Modif.</button>'
         + '<button class="btn btn-d btn-sm" data-mi="' + i + '" onclick="elimMag(+this.dataset.mi)">X</button>'
       + '</td></tr>';
   }
@@ -2178,275 +1584,32 @@ function renderMag() {
 
 function adjQta(i, d) { ML[i].qty = Math.max(0, ML[i].qty + d); salva(); renderMag(); }
 function elimMag(i) { if (!confirm('Eliminare?')) return; ML.splice(i, 1); salva(); renderMag(); }
-
-// ============================================================
-// CATALOGO RICAMBI (listino di riferimento -> import in Magazzino)
-// ============================================================
-var _catList = [];
-
-function popolaFiltriCatalogo() {
-  var brandSel = document.getElementById('cat-brand');
-  var catSel = document.getElementById('cat-cat');
-  if (brandSel.options.length <= 1) {
-    var brands = [];
-    for (var i = 0; i < CATALOGO.length; i++) { if (brands.indexOf(CATALOGO[i].brand) === -1) brands.push(CATALOGO[i].brand); }
-    brands.sort();
-    for (var i = 0; i < brands.length; i++) brandSel.innerHTML += '<option value="' + brands[i] + '">' + brands[i] + '</option>';
-  }
-  if (catSel.options.length <= 1) {
-    var cats = [];
-    for (var i = 0; i < CATALOGO.length; i++) { if (cats.indexOf(CATALOGO[i].cat) === -1) cats.push(CATALOGO[i].cat); }
-    cats.sort();
-    for (var i = 0; i < cats.length; i++) catSel.innerHTML += '<option value="' + cats[i] + '">' + cats[i] + '</option>';
-  }
+function apriModMag(i) {
+  var m = ML[i];
+  document.getElementById('em-idx').value = i;
+  document.getElementById('em-cod').value = m.cod||'';
+  document.getElementById('em-cat').value = m.cat||'Schermo';
+  document.getElementById('em-desc').value = m.desc||'';
+  document.getElementById('em-qty').value = m.qty||0;
+  document.getElementById('em-min').value = m.min||0;
+  document.getElementById('em-pac').value = m.pac||0;
+  document.getElementById('em-pven').value = m.pven||0;
+  apriM('modal-em');
 }
-
-function renderCatalogo() {
-  popolaFiltriCatalogo();
-  var brand = document.getElementById('cat-brand').value;
-  var cat   = document.getElementById('cat-cat').value;
-  var tipo  = (document.getElementById('cat-tipo') || {}).value || '';
-  var q     = document.getElementById('cat-q').value.trim().toLowerCase();
-  var list  = CATALOGO.filter(function(c) {
-    if (brand && c.brand !== brand) return false;
-    if (cat   && c.cat   !== cat)   return false;
-    if (tipo  && c.tipo  !== tipo)  return false;
-    if (q && c.model.toLowerCase().indexOf(q) === -1) return false;
-    return true;
-  });
-  _catList = list;
-  document.getElementById('cat-count').textContent = list.length + ' articolo/i';
-  var tb = document.getElementById('cat-tb');
-  if (!list.length) { tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:36px;color:#555">Nessun articolo trovato</td></tr>'; return; }
-  var html = '';
-  for (var i = 0; i < list.length; i++) {
-    var c = list[i];
-    var tipoColor = c.tipo === 'Originale' ? '#4080ff' : '#40c080';
-    html += '<tr>'
-      + '<td><b style="color:#4080ff">' + c.brand + '</b></td>'
-      + '<td>' + c.model + '</td>'
-      + '<td>' + c.cat + '</td>'
-      + '<td><span style="font-size:11px;font-weight:700;color:' + tipoColor + ';border:1px solid ' + tipoColor + ';border-radius:4px;padding:2px 7px">' + c.tipo + '</span></td>'
-      + '<td>EUR ' + c.pac.toFixed(2) + '</td>'
-      + '<td>EUR ' + c.pven.toFixed(2) + '</td>'
-      + '<td><button class="btn btn-p btn-sm" data-ci="' + i + '" onclick="importaCatalogo(+this.dataset.ci)">+ Importa</button></td>'
-      + '</tr>';
-  }
-  tb.innerHTML = html;
+function salvaModMag() {
+  var i = parseInt(document.getElementById('em-idx').value);
+  var desc = document.getElementById('em-desc').value.trim();
+  if (!desc) { alert('Inserisci la descrizione'); return; }
+  ML[i].cod  = document.getElementById('em-cod').value.trim();
+  ML[i].cat  = document.getElementById('em-cat').value;
+  ML[i].desc = desc;
+  ML[i].qty  = parseInt(document.getElementById('em-qty').value)||0;
+  ML[i].min  = parseInt(document.getElementById('em-min').value)||0;
+  ML[i].pac  = parseFloat(document.getElementById('em-pac').value)||0;
+  ML[i].pven = parseFloat(document.getElementById('em-pven').value)||0;
+  salva(); chiudiM('modal-em'); renderMag();
+  showToast('Aggiornato', ML[i].desc);
 }
-
-// ============================================================
-// ASSISTENTE PREVENTIVI (matching locale, no IA esterna)
-// ============================================================
-
-// Manodopera per categoria pezzo
-var MANODOPERA_SEMPLICE = 30;
-var MANODOPERA_COMPLESSA = 50;
-var CAT_SEMPLICI = ['Schermo', 'Batteria', 'Vetro Posteriore', 'Connettore'];
-// tutto il resto (Fotocamera, Scheda madre, Altro, ecc.) = complesso
-
-function manodoperaPerCategoria(cat) {
-  return CAT_SEMPLICI.indexOf(cat) !== -1 ? MANODOPERA_SEMPLICE : MANODOPERA_COMPLESSA;
-}
-
-// Dizionario sinonimi: frase/parola chiave (minuscolo) -> categoria pezzo
-var SINONIMI_PROBLEMA = [
-  { cat: 'Schermo', kw: ['schermo', 'display', 'vetro rotto', 'touch', 'vetro frontale', 'lcd', 'oled', 'crepato', 'incrinato', 'non tocca'] },
-  { cat: 'Batteria', kw: ['batteria', 'non si carica', 'scarica', 'autonomia', 'si scarica', 'gonfia', 'gonfiore'] },
-  { cat: 'Connettore', kw: ['connettore', 'porta di ricarica', 'jack', 'usb-c', 'lightning', 'non carica bene', 'cavo non entra', 'dc jack', 'alimentazione'] },
-  { cat: 'Vetro Posteriore', kw: ['vetro posteriore', 'scocca posteriore', 'cover posteriore', 'retro rotto', 'vetro dietro'] },
-  { cat: 'Fotocamera', kw: ['fotocamera', 'camera', 'foto sfocate', 'autofocus', 'obiettivo'] },
-  { cat: 'Scheda madre', kw: ['scheda madre', 'non si accende', 'morto', 'bagnato', 'liquido', 'corto circuito', 'scheda logica', 'mainboard'] },
-  { cat: 'Altro', kw: ['tastiera', 'trackpad', 'ventola', 'surriscalda', 'rumore', 'cerniera', 'ram', 'ssd', 'alimentatore', 'caricabatterie'] }
-];
-
-function trovaCategoriaProblema(testo) {
-  var t = testo.toLowerCase();
-  var best = null, bestLen = 0;
-  for (var i = 0; i < SINONIMI_PROBLEMA.length; i++) {
-    var s = SINONIMI_PROBLEMA[i];
-    for (var k = 0; k < s.kw.length; k++) {
-      if (t.indexOf(s.kw[k]) !== -1 && s.kw[k].length > bestLen) {
-        best = s.cat; bestLen = s.kw[k].length;
-      }
-    }
-  }
-  return best; // null se non riconosciuto
-}
-
-function tokenizza(s) {
-  return s.toLowerCase().replace(/[^a-z0-9àèéìòù\s]/g, ' ').split(/\s+/).filter(function(w) { return w.length > 1; });
-}
-
-// Cerca il miglior articolo per (device, categoria, parole del problema) sia nel Magazzino che nel Catalogo
-function trovaArticoloMigliore(deviceTokens, categoria, problemaTokens, tipo) {
-  var candidati = [];
-  for (var i = 0; i < ML.length; i++) {
-    var m = ML[i];
-    if (categoria && m.cat !== categoria) continue;
-    var itemTok = tokenizza(m.desc);
-    var score = scoreMatch(deviceTokens, itemTok) + scoreMatch(problemaTokens, itemTok) * 0.8;
-    if (score > 0) candidati.push({ src: 'magazzino', item: m, score: score + 0.5 });
-  }
-  for (var i = 0; i < CATALOGO.length; i++) {
-    var c = CATALOGO[i];
-    if (categoria && c.cat !== categoria) continue;
-    if (tipo && c.tipo !== tipo) continue;
-    var itemTok = tokenizza(c.brand + ' ' + c.model);
-    var score = scoreMatch(deviceTokens, itemTok) + scoreMatch(problemaTokens, itemTok) * 0.8;
-    if (score > 0) candidati.push({ src: 'catalogo', item: c, score: score });
-  }
-  if (!candidati.length) return null;
-  candidati.sort(function(a, b) { return b.score - a.score; });
-  if (candidati[0].score < 1.5) return null;
-  var deviceNums = deviceTokens.filter(function(t) { return /^\d+$/.test(t); });
-  if (deviceNums.length) {
-    var best = candidati[0];
-    var bestItemTok = best.src === 'magazzino' ? tokenizza(best.item.desc) : tokenizza(best.item.brand + ' ' + best.item.model);
-    best.esatto = deviceNums.some(function(n) { return bestItemTok.indexOf(n) !== -1; });
-  } else { candidati[0].esatto = true; }
-  return candidati[0];
-}
-
-// Punteggio: parole numeriche (modello, es. "13","12") valgono di piu', ma SOLO se accompagnate
-// da almeno un'altra parola di testo in comune (marca/nome/keyword) per evitare falsi positivi tra modelli diversi.
-function scoreMatch(tokens, itemTokens) {
-  var scoreText = 0, scoreNum = 0;
-  for (var i = 0; i < tokens.length; i++) {
-    var tok = tokens[i];
-    var isNum = /^\d+$/.test(tok);
-    if (itemTokens.indexOf(tok) !== -1) {
-      if (isNum) scoreNum += 1.5; else scoreText += 1;
-    }
-  }
-  if (scoreText === 0) return 0;
-  return scoreText + scoreNum;
-}
-
-// Parole "di servizio" da scartare quando si cercano keyword utili dentro la frase problema (no stopword italiane comuni)
-var STOPWORDS_PROBLEMA = ['non', 'si', 'sembra', 'subito', 'molto', 'poco', 'bene', 'piu', 'meno', 'che', 'con', 'per', 'del', 'della', 'dei', 'delle'];
-function tokenizzaProblema(s) {
-  return tokenizza(s).filter(function(w) { return STOPWORDS_PROBLEMA.indexOf(w) === -1; });
-}
-
-var _ultimoPreventivo = null;
-
-function generaPreventivo() {
-  var device = document.getElementById('pv-device').value.trim();
-  var problemiRaw = document.getElementById('pv-problemi').value.trim();
-  if (!device || !problemiRaw) { alert('Inserisci modello dispositivo e almeno un problema'); return; }
-  var righe = problemiRaw.split('\n').map(function(r) { return r.trim(); }).filter(Boolean);
-  var deviceTokens = tokenizza(device);
-  var voci = [];
-  var totOrig = { pezzi: 0, manodopera: 0 };
-  var totComp = { pezzi: 0, manodopera: 0 };
-  for (var i = 0; i < righe.length; i++) {
-    var riga = righe[i];
-    var cat = trovaCategoriaProblema(riga);
-    var problemaTokens = tokenizzaProblema(riga);
-    var manodopera = manodoperaPerCategoria(cat || 'Altro');
-    var matchOrig = trovaArticoloMigliore(deviceTokens, cat, problemaTokens, 'Originale');
-    var matchComp = trovaArticoloMigliore(deviceTokens, cat, problemaTokens, 'Compatibile');
-    var voce = { problema: riga, categoria: cat, manodopera: manodopera, orig: null, comp: null };
-    if (matchOrig) {
-      voce.orig = { desc: matchOrig.src === 'magazzino' ? matchOrig.item.desc : (matchOrig.item.brand + ' - ' + matchOrig.item.model), prezzo: matchOrig.item.pven, fonte: matchOrig.src, approssimato: !matchOrig.esatto, disponibile: matchOrig.src === 'magazzino' ? matchOrig.item.qty : null };
-      totOrig.pezzi += matchOrig.item.pven;
-    }
-    if (matchComp) {
-      voce.comp = { desc: matchComp.src === 'magazzino' ? matchComp.item.desc : (matchComp.item.brand + ' - ' + matchComp.item.model), prezzo: matchComp.item.pven, fonte: matchComp.src, approssimato: !matchComp.esatto, disponibile: matchComp.src === 'magazzino' ? matchComp.item.qty : null };
-      totComp.pezzi += matchComp.item.pven;
-    }
-    totOrig.manodopera += manodopera;
-    totComp.manodopera += manodopera;
-    voci.push(voce);
-  }
-  _ultimoPreventivo = { device: device, voci: voci, totOrig: { pezzi: totOrig.pezzi, manodopera: totOrig.manodopera, totale: totOrig.pezzi + totOrig.manodopera }, totComp: { pezzi: totComp.pezzi, manodopera: totComp.manodopera, totale: totComp.pezzi + totComp.manodopera } };
-  renderPreventivo();
-}
-
-function _voceSide(m, manodopera) {
-  if (!m) return '<div style="color:#555;font-size:12px">—</div><div style="color:#555;font-size:12px">Nessun ricambio trovato</div>';
-  var fonte = m.fonte === 'magazzino' ? '<span style="color:#40d080">&#8226; Magazzino (disp. ' + m.disponibile + ')</span>' : '<span style="color:#4080ff">&#8226; Listino</span>';
-  var warn = m.approssimato ? '<div style="font-size:10px;color:#ffaa00">&#9888; verifica modello</div>' : '';
-  return '<div style="font-size:12px;color:#aaa">' + m.desc + ' ' + fonte + '</div>' + warn + '<div style="font-weight:700;color:#ff5500;margin-top:4px">EUR ' + (m.prezzo + manodopera).toFixed(2) + ' <span style="font-weight:400;font-size:11px;color:#555">(pezzo EUR ' + m.prezzo.toFixed(2) + ' + EUR ' + manodopera.toFixed(2) + ' man.)</span></div>';
-}
-
-function renderPreventivo() {
-  var p = _ultimoPreventivo;
-  var el = document.getElementById('pv-risultato');
-  if (!p) { el.innerHTML = ''; return; }
-
-  var html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">';
-
-  // Colonna Originale
-  html += '<div class="card" style="padding:16px 18px;border-top:3px solid #4080ff">';
-  html += '<div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#4080ff;font-weight:700;margin-bottom:12px">&#11088; Ricambi Originali</div>';
-  for (var i = 0; i < p.voci.length; i++) {
-    var v = p.voci[i];
-    html += '<div style="padding:10px 0;border-bottom:1px solid #1e1e1e"><div style="font-weight:600;margin-bottom:4px">' + v.problema + '</div>' + _voceSide(v.orig, v.manodopera) + '</div>';
-  }
-  html += '<div style="padding-top:14px;display:flex;justify-content:space-between;align-items:center"><div style="font-size:11px;color:#555">Pezzi: EUR ' + p.totOrig.pezzi.toFixed(2) + ' • Man.: EUR ' + p.totOrig.manodopera.toFixed(2) + '</div><div style="font-size:20px;font-weight:800;color:#4080ff">EUR ' + p.totOrig.totale.toFixed(2) + '</div></div>';
-  html += '<button class="btn btn-g" style="margin-top:12px;width:100%;border-color:#4080ff;color:#4080ff" onclick="usaPreventivo(\'orig\')">Usa Preventivo Originale &#8594;</button>';
-  html += '</div>';
-
-  // Colonna Compatibile
-  html += '<div class="card" style="padding:16px 18px;border-top:3px solid #40c080">';
-  html += '<div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#40c080;font-weight:700;margin-bottom:12px">&#9989; Ricambi Compatibili</div>';
-  for (var i = 0; i < p.voci.length; i++) {
-    var v = p.voci[i];
-    html += '<div style="padding:10px 0;border-bottom:1px solid #1e1e1e"><div style="font-weight:600;margin-bottom:4px">' + v.problema + '</div>' + _voceSide(v.comp, v.manodopera) + '</div>';
-  }
-  html += '<div style="padding-top:14px;display:flex;justify-content:space-between;align-items:center"><div style="font-size:11px;color:#555">Pezzi: EUR ' + p.totComp.pezzi.toFixed(2) + ' • Man.: EUR ' + p.totComp.manodopera.toFixed(2) + '</div><div style="font-size:20px;font-weight:800;color:#40c080">EUR ' + p.totComp.totale.toFixed(2) + '</div></div>';
-  html += '<button class="btn btn-g" style="margin-top:12px;width:100%;border-color:#40c080;color:#40c080" onclick="usaPreventivo(\'comp\')">Usa Preventivo Compatibile &#8594;</button>';
-  html += '</div>';
-
-  html += '</div>';
-  html += '<button class="btn btn-g" onclick="document.getElementById(\'pv-risultato\').innerHTML=\'\'">&#10005; Annulla</button>';
-  el.innerHTML = html;
-}
-
-function usaPreventivo(tipo) {
-  var p = _ultimoPreventivo;
-  if (!p) return;
-  var tot = tipo === 'orig' ? p.totOrig : p.totComp;
-  var problemaTesto = p.voci.map(function(v) { return v.problema; }).join(', ');
-  var noteRighe = p.voci.map(function(v) {
-    var m = tipo === 'orig' ? v.orig : v.comp;
-    return '- ' + v.problema + ': ' + (m ? m.desc + ' (EUR ' + m.prezzo.toFixed(2) + ')' : 'pezzo non trovato') + ' + EUR ' + v.manodopera.toFixed(2) + ' man.';
-  });
-  mostraModaleR();
-  setTimeout(function() {
-    document.getElementById('nr-device').value = p.device;
-    document.getElementById('nr-problema').value = problemaTesto;
-    document.getElementById('nr-costo').value = tot.totale.toFixed(2);
-    document.getElementById('nr-note').value = 'Preventivo ' + (tipo === 'orig' ? 'Originale' : 'Compatibile') + ' generato dall\'Assistente:\n' + noteRighe.join('\n');
-  }, 80);
-}
-
-function initPreventivi() {
-  document.getElementById('pv-risultato').innerHTML = '';
-}
-
-function importaCatalogo(i) {
-  var c = _catList[i];
-  if (!c) return;
-  var qty = prompt('Quantita iniziale da inserire in magazzino per "' + c.model + '"?', '1');
-  if (qty === null) return;
-  qty = parseInt(qty) || 0;
-  var cod = (c.brand.substring(0,3) + '-' + c.model.replace(/[^A-Za-z0-9]/g, '').toUpperCase()).substring(0, 16);
-  // se esiste gia un articolo con stesso codice, somma la quantita invece di duplicare
-  var existing = null;
-  for (var k = 0; k < ML.length; k++) { if (ML[k].cod === cod) { existing = ML[k]; break; } }
-  if (existing) {
-    existing.qty += qty;
-  } else {
-    ML.push({ cod: cod, desc: c.brand + ' - ' + c.model, cat: c.cat, qty: qty, min: 1, pac: c.pac, pven: c.pven });
-  }
-  salva();
-  renderMag();
-  showToast('Importato in Magazzino', c.model + ' (qta ' + qty + ')');
-}
-
 
 // ============================================================
 // FATTURE
@@ -2831,16 +1994,444 @@ function parseCSVLine(line) {
   return result;
 }
 
+
+// ============================================================
+// LISTINO PREZZI UFFICIALI
+// ============================================================
+var LISTINO = {
+  apple: [
+    { mod:'iPhone 16 Pro Max', cat:'Schermo',    desc:'Display OLED originale',     pac:289, pven:449 },
+    { mod:'iPhone 16 Pro',     cat:'Schermo',    desc:'Display OLED originale',     pac:259, pven:399 },
+    { mod:'iPhone 16 Plus',    cat:'Schermo',    desc:'Display OLED originale',     pac:219, pven:349 },
+    { mod:'iPhone 16',         cat:'Schermo',    desc:'Display OLED originale',     pac:189, pven:299 },
+    { mod:'iPhone 15 Pro Max', cat:'Schermo',    desc:'Display OLED originale',     pac:259, pven:389 },
+    { mod:'iPhone 15 Pro',     cat:'Schermo',    desc:'Display OLED originale',     pac:229, pven:359 },
+    { mod:'iPhone 15 Plus',    cat:'Schermo',    desc:'Display OLED originale',     pac:189, pven:299 },
+    { mod:'iPhone 15',         cat:'Schermo',    desc:'Display OLED originale',     pac:169, pven:269 },
+    { mod:'iPhone 14 Pro Max', cat:'Schermo',    desc:'Display OLED originale',     pac:219, pven:339 },
+    { mod:'iPhone 14 Pro',     cat:'Schermo',    desc:'Display OLED originale',     pac:199, pven:319 },
+    { mod:'iPhone 14 Plus',    cat:'Schermo',    desc:'Display OLED originale',     pac:169, pven:269 },
+    { mod:'iPhone 14',         cat:'Schermo',    desc:'Display OLED originale',     pac:149, pven:239 },
+    { mod:'iPhone 13 Pro Max', cat:'Schermo',    desc:'Display OLED originale',     pac:189, pven:299 },
+    { mod:'iPhone 13 Pro',     cat:'Schermo',    desc:'Display OLED originale',     pac:169, pven:269 },
+    { mod:'iPhone 13',         cat:'Schermo',    desc:'Display OLED originale',     pac:139, pven:219 },
+    { mod:'iPhone 13 Mini',    cat:'Schermo',    desc:'Display OLED originale',     pac:119, pven:189 },
+    { mod:'iPhone 12 Pro Max', cat:'Schermo',    desc:'Display OLED originale',     pac:159, pven:249 },
+    { mod:'iPhone 12 Pro',     cat:'Schermo',    desc:'Display OLED originale',     pac:149, pven:229 },
+    { mod:'iPhone 12',         cat:'Schermo',    desc:'Display OLED originale',     pac:129, pven:199 },
+    { mod:'iPhone 12 Mini',    cat:'Schermo',    desc:'Display OLED originale',     pac:109, pven:169 },
+    { mod:'iPhone 11 Pro Max', cat:'Schermo',    desc:'Display OLED originale',     pac:139, pven:219 },
+    { mod:'iPhone 11 Pro',     cat:'Schermo',    desc:'Display OLED originale',     pac:129, pven:199 },
+    { mod:'iPhone 11',         cat:'Schermo',    desc:'Display LCD originale',      pac:89,  pven:139 },
+    { mod:'iPhone 16 Pro Max', cat:'Batteria',   desc:'Batteria originale Apple',   pac:69,  pven:109 },
+    { mod:'iPhone 16 Pro',     cat:'Batteria',   desc:'Batteria originale Apple',   pac:65,  pven:99  },
+    { mod:'iPhone 16',         cat:'Batteria',   desc:'Batteria originale Apple',   pac:59,  pven:89  },
+    { mod:'iPhone 15 Pro Max', cat:'Batteria',   desc:'Batteria originale Apple',   pac:65,  pven:99  },
+    { mod:'iPhone 15',         cat:'Batteria',   desc:'Batteria originale Apple',   pac:55,  pven:85  },
+    { mod:'iPhone 14 Pro Max', cat:'Batteria',   desc:'Batteria originale Apple',   pac:59,  pven:89  },
+    { mod:'iPhone 14',         cat:'Batteria',   desc:'Batteria originale Apple',   pac:49,  pven:79  },
+    { mod:'iPhone 13',         cat:'Batteria',   desc:'Batteria originale Apple',   pac:49,  pven:75  },
+    { mod:'iPhone 12',         cat:'Batteria',   desc:'Batteria originale Apple',   pac:45,  pven:69  },
+    { mod:'iPhone 11',         cat:'Batteria',   desc:'Batteria originale Apple',   pac:39,  pven:59  },
+    { mod:'iPhone SE 3 gen',   cat:'Batteria',   desc:'Batteria originale Apple',   pac:39,  pven:59  },
+    { mod:'iPhone 15-16 USB-C',cat:'Connettore', desc:'Connettore ricarica USB-C',  pac:39,  pven:69  },
+    { mod:'iPhone 14 Lightning',cat:'Connettore',desc:'Connettore Lightning',        pac:29,  pven:49  },
+    { mod:'iPad Pro 12.9 2024',cat:'Schermo',    desc:'Display OLED originale',     pac:389, pven:599 },
+    { mod:'iPad Pro 11 2024',  cat:'Schermo',    desc:'Display OLED originale',     pac:299, pven:469 },
+    { mod:'iPad Air 13 2024',  cat:'Schermo',    desc:'Display LCD originale',      pac:189, pven:299 },
+    { mod:'iPad 10 gen',       cat:'Schermo',    desc:'Display LCD originale',      pac:129, pven:199 },
+    { mod:'iPad Mini 6',       cat:'Schermo',    desc:'Display LCD originale',      pac:149, pven:229 }
+  ],
+  samsung: [
+    { mod:'Galaxy S24 Ultra',  cat:'Schermo',   desc:'Display Dynamic AMOLED',      pac:269, pven:419 },
+    { mod:'Galaxy S24 Plus',   cat:'Schermo',   desc:'Display Dynamic AMOLED',      pac:229, pven:359 },
+    { mod:'Galaxy S24',        cat:'Schermo',   desc:'Display Dynamic AMOLED',      pac:189, pven:299 },
+    { mod:'Galaxy S23 Ultra',  cat:'Schermo',   desc:'Display Dynamic AMOLED',      pac:239, pven:369 },
+    { mod:'Galaxy S23 Plus',   cat:'Schermo',   desc:'Display Dynamic AMOLED',      pac:199, pven:319 },
+    { mod:'Galaxy S23',        cat:'Schermo',   desc:'Display Dynamic AMOLED',      pac:169, pven:269 },
+    { mod:'Galaxy S22 Ultra',  cat:'Schermo',   desc:'Display Dynamic AMOLED',      pac:209, pven:329 },
+    { mod:'Galaxy S22',        cat:'Schermo',   desc:'Display Dynamic AMOLED',      pac:149, pven:239 },
+    { mod:'Galaxy A55',        cat:'Schermo',   desc:'Display Super AMOLED',        pac:109, pven:169 },
+    { mod:'Galaxy A54',        cat:'Schermo',   desc:'Display Super AMOLED',        pac:99,  pven:155 },
+    { mod:'Galaxy A35',        cat:'Schermo',   desc:'Display Super AMOLED',        pac:89,  pven:139 },
+    { mod:'Galaxy A34',        cat:'Schermo',   desc:'Display Super AMOLED',        pac:79,  pven:124 },
+    { mod:'Galaxy A25',        cat:'Schermo',   desc:'Display Super AMOLED',        pac:69,  pven:109 },
+    { mod:'Galaxy A15',        cat:'Schermo',   desc:'Display LCD',                 pac:49,  pven:79  },
+    { mod:'Galaxy Z Fold6',    cat:'Schermo',   desc:'Display interno pieghevole',  pac:449, pven:699 },
+    { mod:'Galaxy Z Flip6',    cat:'Schermo',   desc:'Display interno pieghevole',  pac:299, pven:469 },
+    { mod:'Galaxy Z Fold5',    cat:'Schermo',   desc:'Display interno pieghevole',  pac:399, pven:619 },
+    { mod:'Galaxy Z Flip5',    cat:'Schermo',   desc:'Display interno pieghevole',  pac:269, pven:419 },
+    { mod:'Galaxy S24 Ultra',  cat:'Batteria',  desc:'Batteria originale Samsung',  pac:59,  pven:89  },
+    { mod:'Galaxy S24',        cat:'Batteria',  desc:'Batteria originale Samsung',  pac:49,  pven:75  },
+    { mod:'Galaxy S23 Ultra',  cat:'Batteria',  desc:'Batteria originale Samsung',  pac:55,  pven:85  },
+    { mod:'Galaxy S23',        cat:'Batteria',  desc:'Batteria originale Samsung',  pac:45,  pven:69  },
+    { mod:'Galaxy A55',        cat:'Batteria',  desc:'Batteria originale Samsung',  pac:35,  pven:55  },
+    { mod:'Galaxy A54',        cat:'Batteria',  desc:'Batteria originale Samsung',  pac:32,  pven:49  },
+    { mod:'Galaxy A34',        cat:'Batteria',  desc:'Batteria originale Samsung',  pac:29,  pven:45  }
+  ],
+  xiaomi: [
+    { mod:'Xiaomi 14 Ultra',     cat:'Schermo',  desc:'Display AMOLED LTPO',  pac:219, pven:339 },
+    { mod:'Xiaomi 14 Pro',       cat:'Schermo',  desc:'Display AMOLED LTPO',  pac:189, pven:299 },
+    { mod:'Xiaomi 14',           cat:'Schermo',  desc:'Display AMOLED',       pac:159, pven:249 },
+    { mod:'Redmi Note 13 Pro+',  cat:'Schermo',  desc:'Display AMOLED',       pac:99,  pven:155 },
+    { mod:'Redmi Note 13 Pro',   cat:'Schermo',  desc:'Display AMOLED',       pac:79,  pven:124 },
+    { mod:'Redmi Note 13',       cat:'Schermo',  desc:'Display AMOLED',       pac:59,  pven:93  },
+    { mod:'Redmi 13C',           cat:'Schermo',  desc:'Display LCD',          pac:39,  pven:62  },
+    { mod:'Xiaomi 14',           cat:'Batteria', desc:'Batteria originale',   pac:45,  pven:69  },
+    { mod:'Redmi Note 13',       cat:'Batteria', desc:'Batteria originale',   pac:29,  pven:45  }
+  ],
+  huawei: [
+    { mod:'Huawei P60 Pro',    cat:'Schermo',  desc:'Display OLED',         pac:189, pven:299 },
+    { mod:'Huawei P50 Pro',    cat:'Schermo',  desc:'Display OLED',         pac:159, pven:249 },
+    { mod:'Huawei Mate 60 Pro',cat:'Schermo',  desc:'Display OLED',         pac:219, pven:339 },
+    { mod:'Huawei Nova 11',    cat:'Schermo',  desc:'Display OLED',         pac:99,  pven:155 },
+    { mod:'Huawei P60 Pro',    cat:'Batteria', desc:'Batteria originale',   pac:49,  pven:75  },
+    { mod:'Huawei P50 Pro',    cat:'Batteria', desc:'Batteria originale',   pac:42,  pven:65  }
+  ]
+};
+
+function apriListino() { renderListino(); apriM('modal-listino'); }
+
+function renderListino() {
+  var brand = document.getElementById('lst-brand').value;
+  var cat   = document.getElementById('lst-cat').value;
+  var q     = document.getElementById('lst-search').value.toLowerCase().trim();
+  var data  = LISTINO[brand] || [];
+  var filtered = data.filter(function(x) {
+    if (cat && x.cat !== cat) return false;
+    if (q && x.mod.toLowerCase().indexOf(q)===-1 && x.desc.toLowerCase().indexOf(q)===-1) return false;
+    return true;
+  });
+  var html = '<table style="width:100%"><thead><tr><th>Modello</th><th>Cat.</th><th>Descrizione</th><th>P.Acq</th><th>P.Vend</th><th></th></tr></thead><tbody>';
+  if (!filtered.length) {
+    html += '<tr><td colspan="6" style="text-align:center;padding:32px;color:#555">Nessun risultato</td></tr>';
+  } else {
+    for (var i = 0; i < filtered.length; i++) {
+      var x = filtered[i];
+      var mp = Math.round(((x.pven-x.pac)/x.pven)*100);
+      html += '<tr>'
+        + '<td><b>' + x.mod + '</b></td>'
+        + '<td><span style="font-size:11px;background:#1a1a1a;padding:2px 7px;border-radius:10px">' + x.cat + '</span></td>'
+        + '<td style="font-size:12px;color:#888">' + x.desc + '</td>'
+        + '<td style="color:#ff8800;font-weight:700">EUR ' + x.pac.toFixed(2) + '</td>'
+        + '<td><b style="color:#40d080">EUR ' + x.pven.toFixed(2) + '</b><br><span style="font-size:10px;color:#555">+' + mp + '% marg.</span></td>'
+        + '<td><button class="btn btn-g btn-sm" style="border-color:#4080ff;color:#4080ff" data-brand="' + brand + '" data-idx="' + i + '" onclick="importaDaListino(+this.dataset.idx,this.dataset.brand)">+ Aggiungi</button></td>'
+        + '</tr>';
+    }
+  }
+  html += '</tbody></table>';
+  document.getElementById('lst-tb').innerHTML = html;
+}
+
+function importaDaListino(idx, brand) {
+  var cat = document.getElementById('lst-cat').value;
+  var q   = document.getElementById('lst-search').value.toLowerCase().trim();
+  var filtered = (LISTINO[brand]||[]).filter(function(x) {
+    if (cat && x.cat !== cat) return false;
+    if (q && x.mod.toLowerCase().indexOf(q)===-1 && x.desc.toLowerCase().indexOf(q)===-1) return false;
+    return true;
+  });
+  var x = filtered[idx];
+  if (!x) return;
+  var descFull = x.mod + ' - ' + x.desc;
+  var esi = ML.findIndex(function(m){ return m.desc.toLowerCase()===descFull.toLowerCase(); });
+  if (esi >= 0) {
+    if (!confirm('Articolo gia presente. Aggiornare i prezzi?')) return;
+    ML[esi].pac = x.pac; ML[esi].pven = x.pven;
+    salva(); renderMag(); showToast('Prezzi aggiornati', x.mod); return;
+  }
+  ML.push({
+    cod: brand.substring(0,3).toUpperCase()+'-'+x.mod.replace(/[^a-zA-Z0-9]/g,'').substring(0,8).toUpperCase(),
+    desc: descFull, cat: x.cat, qty: 0, min: 1, pac: x.pac, pven: x.pven
+  });
+  salva(); renderMag(); showToast('Aggiunto!', x.mod+' - '+x.cat);
+}
+
+// ============================================================
+// ORDINI CLIENTI
+// ============================================================
+var OL  = JSON.parse(localStorage.getItem('rp_ol')  || '[]');
+var OID = parseInt(localStorage.getItem('rp_oid') || '0');
+
+function apriNuovoOrdine() {
+  document.getElementById('nord-idx').value = '-1';
+  document.getElementById('nord-title').textContent = 'Nuovo Ordine Cliente';
+  ['nord-nome','nord-tel','nord-art','nord-note'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('nord-qty').value   = '1';
+  document.getElementById('nord-costo').value = '';
+  document.getElementById('nord-data').value  = '';
+  document.getElementById('nord-stato').value = 'In attesa';
+  apriM('modal-nord');
+}
+
+function apriModificaOrdine(id) {
+  var o = OL.find(function(x){ return x.id===id; });
+  if (!o) return;
+  document.getElementById('nord-idx').value   = id;
+  document.getElementById('nord-title').textContent = 'Modifica Ordine #O'+String(id).padStart(3,'0');
+  document.getElementById('nord-nome').value  = o.nome||'';
+  document.getElementById('nord-tel').value   = o.tel||'';
+  document.getElementById('nord-art').value   = o.art||'';
+  document.getElementById('nord-qty').value   = o.qty||1;
+  document.getElementById('nord-costo').value = o.costo||'';
+  document.getElementById('nord-data').value  = o.data||'';
+  document.getElementById('nord-note').value  = o.note||'';
+  document.getElementById('nord-stato').value = o.stato||'In attesa';
+  apriM('modal-nord');
+}
+
+function salvaOrdine() {
+  var nome = document.getElementById('nord-nome').value.trim();
+  var art  = document.getElementById('nord-art').value.trim();
+  if (!nome) { alert('Inserisci il nome del cliente'); return; }
+  if (!art)  { alert('Inserisci l articolo ordinato'); return; }
+  var idx   = document.getElementById('nord-idx').value;
+  var isNew = idx==='-1';
+  if (isNew) OID++;
+  var obj = {
+    id:    isNew ? OID : parseInt(idx),
+    nome:  nome,
+    tel:   document.getElementById('nord-tel').value.trim(),
+    art:   art,
+    qty:   parseInt(document.getElementById('nord-qty').value)||1,
+    costo: parseFloat(document.getElementById('nord-costo').value)||0,
+    data:  document.getElementById('nord-data').value,
+    note:  document.getElementById('nord-note').value.trim(),
+    stato: document.getElementById('nord-stato').value,
+    ts:    isNew ? Date.now() : (OL.find(function(x){return x.id===parseInt(idx);})||{}).ts||Date.now()
+  };
+  if (isNew) { OL.unshift(obj); }
+  else { var ii=OL.findIndex(function(x){return x.id===obj.id;}); if(ii>=0) OL[ii]=obj; }
+  localStorage.setItem('rp_ol',  JSON.stringify(OL));
+  localStorage.setItem('rp_oid', String(OID));
+  chiudiM('modal-nord'); renderOrdini(); aggiornaNotifOrdini();
+  showToast(isNew?'Ordine creato!':'Ordine aggiornato', nome+' - '+art);
+}
+
+function eliminaOrdine(id) {
+  if (!confirm('Eliminare questo ordine?')) return;
+  OL = OL.filter(function(x){ return x.id!==id; });
+  localStorage.setItem('rp_ol', JSON.stringify(OL));
+  renderOrdini(); aggiornaNotifOrdini();
+}
+
+function cambiaStatoOrdine(id, val) {
+  var o = OL.find(function(x){ return x.id===id; });
+  if (!o) return;
+  var old = o.stato; o.stato = val;
+  localStorage.setItem('rp_ol', JSON.stringify(OL));
+  if (val==='Arrivato' && old!=='Arrivato') showToast('Ordine arrivato!', o.art+' per '+o.nome);
+  renderOrdini(); aggiornaNotifOrdini();
+}
+
+function aggiornaNotifOrdini() {
+  var cnt = OL.filter(function(x){ return x.stato==='Arrivato'; }).length;
+  var el = document.getElementById('nb-ordini-cnt');
+  if (el) { el.textContent=cnt; el.style.display=cnt>0?'inline':'none'; }
+}
+
+function renderOrdini() {
+  var q     = (document.getElementById('ord-search')||{value:''}).value.toLowerCase().trim();
+  var stato = (document.getElementById('ord-filter-stato')||{value:''}).value;
+  var filtered = OL.filter(function(o) {
+    if (q && o.nome.toLowerCase().indexOf(q)===-1 && o.art.toLowerCase().indexOf(q)===-1) return false;
+    if (stato && o.stato!==stato) return false;
+    return true;
+  });
+  var arrivati = OL.filter(function(x){ return x.stato==='Arrivato'; });
+  var alertEl = document.getElementById('ord-alert');
+  if (alertEl) alertEl.innerHTML = arrivati.length ? '<div class="alert alert-w">&#128666; <b>'+arrivati.length+' ordine/i arrivato/i</b> da consegnare</div>' : '';
+  var infoEl = document.getElementById('ord-info');
+  if (infoEl) {
+    var inCorso = OL.filter(function(x){return x.stato==='In attesa'||x.stato==='Ordinato';}).length;
+    infoEl.innerHTML = OL.length+' ordini &nbsp;&bull;&nbsp; <b style="color:#4080ff">'+inCorso+' in corso</b> &nbsp;&bull;&nbsp; <b style="color:#40d080">'+arrivati.length+' arrivati</b>';
+  }
+  var tb = document.getElementById('ord-tb');
+  if (!tb) return;
+  if (!filtered.length) { tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:36px;color:#555">'+(OL.length?'Nessun risultato':'Nessun ordine')+'</td></tr>'; return; }
+  var stati = ['In attesa','Ordinato','Arrivato','Consegnato','Annullato'];
+  var sColor = {'In attesa':'#888','Ordinato':'#4080ff','Arrivato':'#40d080','Consegnato':'#555','Annullato':'#ff2200'};
+  var html='';
+  for (var i=0; i<filtered.length; i++) {
+    var o=filtered[i];
+    var dStr = o.data ? new Date(o.data).toLocaleDateString('it-IT') : '-';
+    var tStr = new Date(o.ts).toLocaleDateString('it-IT');
+    var opts = stati.map(function(s){return '<option'+(s===o.stato?' selected':'')+'>'+s+'</option>';}).join('');
+    html += '<tr>'
+      +'<td><code style="color:#4080ff">#O'+String(o.id).padStart(3,'0')+'</code></td>'
+      +'<td><b>'+o.nome+'</b>'+(o.tel?'<br><small style="color:#555">'+o.tel+'</small>':'')+'</td>'
+      +'<td><b>'+o.art+'</b>'+(o.note?'<br><small style="color:#666">'+o.note+'</small>':'')+'</td>'
+      +'<td style="text-align:center">'+o.qty+'</td>'
+      +'<td>'+(o.costo?'EUR '+o.costo.toFixed(2):'-')+'</td>'
+      +'<td>'+dStr+'<br><small style="color:#444">'+tStr+'</small></td>'
+      +'<td><select class="inp btn-sm" style="width:130px;color:'+(sColor[o.stato]||'#888')+'" onchange="cambiaStatoOrdine('+o.id+',this.value)">'+opts+'</select></td>'
+      +'<td style="white-space:nowrap">'
+        +'<button class="btn btn-g btn-sm" style="border-color:#ff8800;color:#ff8800;margin-right:3px" onclick="apriModificaOrdine('+o.id+')">Modif.</button>'
+        +'<button class="btn btn-d btn-sm" onclick="eliminaOrdine('+o.id+')">X</button>'
+      +'</td></tr>';
+  }
+  tb.innerHTML=html;
+}
+
+// ============================================================
+// STAMPA POS 80mm
+// ============================================================
+function stampaPOS() {
+  var r = RL.find(function(x){ return x.id===scedaAttivaId; });
+  if (!r) { alert('Apri prima la scheda di una riparazione.'); return; }
+  var costo = r.costo ? 'EUR '+parseFloat(r.costo).toFixed(2) : 'Da definire';
+  var data  = new Date().toLocaleDateString('it-IT');
+  var ora   = new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+  var css = '<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:"Courier New",Courier,monospace;font-size:12px;width:72mm;background:white;color:#000}@page{margin:3mm;size:80mm auto}.c{text-align:center}.b{font-weight:bold}.g{font-size:15px;font-weight:bold}.s{border-top:1px dashed #000;margin:4px 0}.s2{border-top:2px solid #000;margin:4px 0}.r{display:flex;justify-content:space-between;margin:2px 0}.lbl{color:#555;font-size:10px;text-transform:uppercase}.gc{font-size:20px;font-weight:900;text-align:center;margin:6px 0;letter-spacing:2px}</style>';
+  var h='';
+  h+='<div class="c g">'+SET.nome+'</div>';
+  if(SET.slogan) h+='<div class="c" style="font-size:10px">'+SET.slogan+'</div>';
+  if(SET.ind)    h+='<div class="c" style="font-size:10px">'+SET.ind+'</div>';
+  if(SET.tel)    h+='<div class="c" style="font-size:10px">Tel: '+SET.tel+'</div>';
+  h+='<div class="s2"></div>';
+  h+='<div class="r"><span class="b">SCHEDA #'+String(r.id).padStart(4,'0')+'</span><span>'+data+' '+ora+'</span></div>';
+  h+='<div class="s"></div>';
+  h+='<div class="lbl">Cliente</div><div class="b" style="font-size:13px">'+(r.nome||'-')+'</div>';
+  if(r.tel)   h+='<div>Tel: '+r.tel+'</div>';
+  if(r.email) h+='<div>'+r.email+'</div>';
+  h+='<div class="s"></div>';
+  h+='<div class="lbl">Dispositivo</div><div class="b">'+(r.device||'-')+'</div>';
+  if(r.imei) h+='<div style="font-size:10px">IMEI: '+r.imei+'</div>';
+  if(r.tipo) h+='<div>Intervento: '+r.tipo+'</div>';
+  h+='<div class="s"></div>';
+  h+='<div class="lbl">Problema</div><div style="font-size:11px;word-break:break-word">'+(r.problema||'-')+'</div>';
+  if(r.pin){ h+='<div class="s"></div><div class="lbl">PIN</div><div class="b" style="font-size:16px;letter-spacing:6px">'+r.pin+'</div>'; }
+  h+='<div class="s2"></div>';
+  h+='<div class="lbl c">Preventivo</div><div class="gc">'+costo+'</div>';
+  if(r.consegna)       h+='<div class="c" style="font-size:11px">Consegna prevista: '+r.consegna+'</div>';
+  if(r.dataConsegnato) h+='<div class="c b">Consegnato il: '+r.dataConsegnato+'</div>';
+  h+='<div class="s2"></div>';
+  if(r.note){ h+='<div class="lbl">Note</div><div style="font-size:11px;word-break:break-word">'+r.note+'</div><div class="s"></div>'; }
+  h+='<div style="font-size:9px;line-height:1.5">Garanzia 90gg stesso difetto. Non ritirati dopo 30gg: costi custodia.</div>';
+  h+='<div class="s"></div>';
+  h+='<div style="font-size:10px">Firma Cliente:<br><br><br></div>';
+  h+='<div style="border-top:1px solid #000;padding-top:4px;font-size:10px;margin-top:4px">Firma Tecnico:<br><br><br></div>';
+  h+='<div class="s"></div>';
+  h+='<div class="c" style="font-size:9px">'+SET.nome+(SET.piva?' - P.IVA '+SET.piva:'')+'</div>';
+  h+='<div class="c" style="font-size:9px">Grazie e arrivederci!</div><br><br>';
+  var win=window.open('','_blank','width=320,height=700');
+  if(!win){alert('Abilita i popup per stampare');return;}
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>POS</title>'+css+'</head><body>'+h);
+  win.document.write('<scri'+'pt>window.onload=function(){window.print();setTimeout(function(){window.close();},800);};<'+'/scri'+'pt>');
+  win.document.write('</body></html>');
+  win.document.close();
+}
+
 // ============================================================
 // AVVIO
 // ============================================================
 aggiornaSidebar();
 aggiornaLogo();
+aggiornaNotifOrdini();
 initGriglia('new');
 caricaEst('nr', '8');
 renderDash();
 renderNotif();
 
 </script>
+
+<!-- MODAL LISTINO UFFICIALE -->
+<div class="modal-bg" id="modal-listino">
+  <div class="modal" style="width:700px;max-height:90vh">
+    <div class="modal-hd">
+      <div class="modal-t">&#128176; Listino Prezzi Ufficiali</div>
+      <button class="modal-x" onclick="chiudiM('modal-listino')">x</button>
+    </div>
+    <div class="modal-b" style="padding:0">
+      <div style="padding:12px 16px;border-bottom:1px solid #1a1a1a;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select class="inp" id="lst-brand" style="width:130px" onchange="renderListino()">
+          <option value="apple">Apple</option><option value="samsung">Samsung</option>
+          <option value="xiaomi">Xiaomi</option><option value="huawei">Huawei</option>
+        </select>
+        <select class="inp" id="lst-cat" style="width:140px" onchange="renderListino()">
+          <option value="">Tutte le categorie</option>
+          <option>Schermo</option><option>Batteria</option><option>Connettore</option>
+          <option>Fotocamera</option><option>Scocca</option>
+        </select>
+        <input class="inp" id="lst-search" placeholder="Cerca modello..." style="flex:1;min-width:120px" oninput="renderListino()">
+        <div style="font-size:10px;color:#555;width:100%">&#9432; Prezzi indicativi di riferimento IVA inclusa. Listini ufficiali service autorizzati 2024-2025.</div>
+      </div>
+      <div id="lst-tb" style="overflow-y:auto;max-height:430px"></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-g" onclick="chiudiM('modal-listino')">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MODIFICA MAGAZZINO -->
+<div class="modal-bg" id="modal-em">
+  <div class="modal" style="width:500px">
+    <div class="modal-hd">
+      <div class="modal-t">Modifica Articolo</div>
+      <button class="modal-x" onclick="chiudiM('modal-em')">x</button>
+    </div>
+    <div class="modal-b">
+      <input type="hidden" id="em-idx">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label class="fl">Codice</label><input class="inp" id="em-cod"></div>
+        <div class="fg"><label class="fl">Categoria</label>
+          <select class="inp" id="em-cat">
+            <option>Schermo</option><option>Batteria</option><option>Connettore</option>
+            <option>Fotocamera</option><option>Scocca</option><option>Scheda madre</option><option>Altro</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg" style="margin-top:10px"><label class="fl">Descrizione *</label><input class="inp" id="em-desc"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+        <div class="fg"><label class="fl">Quantita</label><input class="inp" id="em-qty" type="number" min="0"></div>
+        <div class="fg"><label class="fl">Scorta minima</label><input class="inp" id="em-min" type="number" min="0"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+        <div class="fg"><label class="fl">P.Acquisto EUR</label><input class="inp" id="em-pac" type="number" step="0.01" min="0"></div>
+        <div class="fg"><label class="fl">P.Vendita EUR</label><input class="inp" id="em-pven" type="number" step="0.01" min="0"></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-g" onclick="chiudiM('modal-em')">Annulla</button>
+      <button class="btn btn-p" onclick="salvaModMag()">Salva Modifiche</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUOVO/MODIFICA ORDINE -->
+<div class="modal-bg" id="modal-nord">
+  <div class="modal" style="width:520px">
+    <div class="modal-hd">
+      <div class="modal-t" id="nord-title">Nuovo Ordine Cliente</div>
+      <button class="modal-x" onclick="chiudiM('modal-nord')">x</button>
+    </div>
+    <div class="modal-b">
+      <input type="hidden" id="nord-idx" value="-1">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label class="fl">Cliente *</label><input class="inp" id="nord-nome" placeholder="Nome cliente"></div>
+        <div class="fg"><label class="fl">Telefono</label><input class="inp" id="nord-tel" placeholder="3331234567"></div>
+      </div>
+      <div class="fg" style="margin-top:10px"><label class="fl">Articolo / Ricambio *</label><input class="inp" id="nord-art" placeholder="Es: Schermo iPhone 15 Pro originale"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px">
+        <div class="fg"><label class="fl">Quantita</label><input class="inp" id="nord-qty" type="number" min="1" value="1"></div>
+        <div class="fg"><label class="fl">Costo EUR</label><input class="inp" id="nord-costo" type="number" step="0.01" min="0" placeholder="0.00"></div>
+        <div class="fg"><label class="fl">Data prevista</label><input class="inp" id="nord-data" type="date"></div>
+      </div>
+      <div class="fg" style="margin-top:10px"><label class="fl">Note</label><textarea class="inp" id="nord-note" placeholder="Note aggiuntive..." style="min-height:60px"></textarea></div>
+      <div class="fg" style="margin-top:10px"><label class="fl">Stato</label>
+        <select class="inp" id="nord-stato">
+          <option>In attesa</option><option>Ordinato</option><option>Arrivato</option>
+          <option>Consegnato</option><option>Annullato</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-g" onclick="chiudiM('modal-nord')">Annulla</button>
+      <button class="btn btn-p" onclick="salvaOrdine()">Salva Ordine</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
